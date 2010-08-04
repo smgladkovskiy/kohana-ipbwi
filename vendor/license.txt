@@ -1,0 +1,32 @@
+	Invision Power Board Website Integration (IPBWI)
+		is a library of PHP functions, which will help you develop
+		advanced applications on your site.
+	Code (c) 2007-2010 IPBWI development team
+	Project Leader: Matthias Reuter
+	Project Website: http://ipbwi.com
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	
+	IMPORTANT: RESELLING THE GPL LICENSED VERSION OF
+	IPBWI LINKED WITH YOUR OWN NON-GPL-COMPATIBLE SOFTWARE
+	IS STRICTLY PROHIBITED THROUGH GPL 3 ITSELF.
+	
+	PLEASE NOTE THAT THERE IS ALSO A BUSINESS LICENSE
+	WHICH ALLOWS THIS: IT INCLUDES PREMIUM SUPPORT AND
+	ALLOWS DISTRIBUTING AND RESELLING IPBWI WITH YOUR
+	PROBRITARY (NON-FREE) SOFTWARE. 
+	
+	MORE INFORMATIONS ABOUT THE BUSINESS LICENSE:
+	CONTACT MATTHIAS REUTER ON http://ipbwi.com

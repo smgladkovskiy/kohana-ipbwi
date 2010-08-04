@@ -1,0 +1,223 @@
+<!--
+			* {
+				font-family: Verdana, Arial, Helvetica, sans-serif;
+				font-size: 13px;
+			}
+
+			html,body {
+				padding: 0px;
+				margin: 0px;
+				overflow-x:hidden;
+			}
+
+			html {
+				background-image:url(../img/background.png);
+				background-repeat:no-repeat;
+				background-color:#8b5529;
+			}
+
+			body {
+				padding: 40px;
+			}
+			
+
+			#main {
+				padding: 0px;
+				margin: 0px auto 0px;
+				width: 728px;
+				border:1px solid #000;
+				background-color:#FFFFCC;
+				opacity: 0.8;
+				-moz-opacity: 0.8;
+				filter: alpha(opacity=80);
+			}
+
+			div, img {
+				margin: 0px;
+				border: 0px;
+			}
+
+			a { color: #000; }
+			a:hover { text-decoration:none; }
+
+			pre {
+				overflow-x:auto;
+				background-color:#FFF;
+				border:1px dashed #CCC;
+				padding:10px;
+				margin:10px;
+			}
+			#menu ul {
+				list-style-type:none;
+			}
+			#menu li a {
+				text-decoration:none;
+				line-height:30px;
+				padding-left:25px;
+				background-image:url(../img/icons/16x16/places/folder.png);
+				background-repeat:no-repeat;
+			}
+			#menu li p {
+				line-height:30px;
+				padding-left:25px;
+				background-image:url(../img/icons/16x16/actions/list-remove.png);
+				background-repeat:no-repeat;
+				background-position:0px 7px;
+			}
+			#menu li p a {
+				text-decoration:underline;
+				line-height:30px;
+				padding-left:0px;
+				background-image:none;
+			}
+			#menu li p a:hover {
+				text-decoration:none;
+				line-height:30px;
+				padding-left:0px;
+				background-image:none;
+			}
+			#menu li a:hover {
+				text-decoration:underline;
+			}
+			li { padding:0px;margin:0px; vertical-align:top; }
+
+			h1,h2,h3 {
+				color:#ff6600;
+				font-weight: normal;
+				font-size: 24px;
+				margin-bottom: 2px;
+				margin-top: 30px;
+			}
+
+			h2 {
+				font-size: 18px;
+			}
+
+			h3 {
+				font-size: 14px;
+			}
+
+			.std_emo{
+				width:500px;
+			}
+			.std_text{
+				width:500px;
+				height:150px;
+			}
+			
+			.info {
+				background-color:#FFF;
+				display:table;
+				width:100%;
+			}
+
+			.i_blank {
+				border:1px solid #999;
+				padding:10px;
+				vertical-align:middle;
+				background-color:#FFFFAA;
+				vertical-align:top;
+			}
+			.i_system {
+				background-image:url(../img/icons/32x32/emblems/emblem-system.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px solid #999;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFFFAA;
+				vertical-align:top;
+			}
+			.i_important {
+				background-image:url(../img/icons/32x32/emblems/emblem-important.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_member {
+				background-image:url(../img/icons/32x32/apps/system-users.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_up2date {
+				background-image:url(../img/icons/32x32/emotes/face-angel.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_outdated {
+				background-image:url(../img/icons/32x32/status/dialog-warning.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_applications_internet {
+				background-image:url(../img/icons/32x32/categories/applications-internet.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_help {
+				background-image:url(../img/icons/32x32/apps/help-browser.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+			.i_support {
+				background-image:url(../img/icons/32x32/apps/utilities-system-monitor.png);
+				background-repeat:no-repeat;
+				background-position:10px 10px;
+				border:1px dashed #CCC;
+				padding:15px 10px 15px 50px;
+				vertical-align:middle;
+				background-color:#FFF;
+				vertical-align:top;
+			}
+
+			#footer {
+				border: 1px dashed #666;
+				padding: 5px;
+				font-size: 10px;
+				color:#666;
+				margin-top:20px;
+			}
+
+			#footer a {
+				font-size: 10px;
+				color:#666;
+			}
+
+			#source {
+				margin: 10px;
+				padding: 10px;
+				clear: both;
+				border: 1px dashed #999;
+				background-color:#FFF;
+				overflow-x:auto;
+			}
+-->
