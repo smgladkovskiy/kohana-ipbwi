@@ -30,15 +30,15 @@
 			require_once(ipbwi_ROOT_PATH.'lib/third_party/recaptchalib.inc.php');
 
 			// loads IP.Board Captcha Class
-			require_once(ipbwi_BOARD_PATH.'ips_kernel/class_captcha.php');
-			$this->captcha	= new class_captcha(self::$ips,$this->ipbwi->ips_wrapper->vars['bot_antispam_type']);
+			require_once(ipbwi_BOARD_PATH.'ips_kernel/classCaptcha.php');
+			$this->captcha	= new classCaptcha($this->ipbwi->ips_wrapper->registry,$this->ipbwi->ips_wrapper->settings['bot_antispam_type']);
 
 			// if the captcha mode is auto, and the board uses recaptcha we have
 			// to use the public and private key that is set in the board
 			if(ipbwi_CAPTCHA_MODE == 'auto'){
-				if($this->ipbwi->ips_wrapper->vars['bot_antispam_type'] == 'recaptcha'){
-					$this->recaptchaPrivateKey	= $this->ipbwi->ips_wrapper->vars['recaptcha_private_key'];
-					$this->recaptchaPublicKey	= $this->ipbwi->ips_wrapper->vars['recaptcha_public_key'];
+				if($this->ipbwi->ips_wrapper->settings['bot_antispam_type'] == 'recaptcha'){
+					$this->recaptchaPrivateKey	= $this->ipbwi->ips_wrapper->settings['recaptcha_private_key'];
+					$this->recaptchaPublicKey	= $this->ipbwi->ips_wrapper->settings['recaptcha_public_key'];
 				}
 			}
 		}
@@ -61,7 +61,7 @@
 				return $this->getRecaptchaHtml();
 				break;
 			case 'auto':
-				if($this->ipbwi->ips_wrapper->vars['bot_antispam_type'] == 'recaptcha'){
+				if($this->ipbwi->ips_wrapper->settings['bot_antispam_type'] == 'recaptcha'){
 					return $this->getRecaptchaHtml();
 				}else{
 					return $this->getGdHtml($ajaxUrl);
@@ -100,7 +100,7 @@
 			$uniqueId		= $this->createUniqueId();
 			$this->uniqueId	= $uniqueId;
 			// Save the new captcha data in Database
-			$this->ipbwi->ips_wrapper->DB->do_insert('reg_antispam', array('regid' => $uniqueId, 'regcode' => $captchaString, 'ip_address' => $this->ipbwi->ips_wrapper->ip_address, 'ctime' => time()));
+			$this->ipbwi->ips_wrapper->DB->insert('captcha', array('captcha_unique_id' => $uniqueId, 'captcha_string' => $captchaString, 'captcha_ipaddress' => $_SERVER['REMOTE_ADDR'], 'captcha_date' => time()));
 			return $uniqueId;
 		}
 		/**
@@ -113,7 +113,7 @@
 		 */
 		private function validateRecaptcha($responseField, $challengeField){
 			// Send the entered string to the recaptcha server and listen if it was correct
-			$resp = recaptcha_check_answer($this->recaptchaPrivateKey, $this->ipbwi->ips_wrapper->ip_address, $challengeField, $responseField);
+			$resp = recaptcha_check_answer($this->recaptchaPrivateKey, $_SERVER['REMOTE_ADDR'], $challengeField, $responseField);
 			if($resp->is_valid){
 				return true;
 			}else{
@@ -130,11 +130,11 @@
 		 */
 		private function validateGd($uniqueId, $userCaptchaString){
 			// Get the correct Captcha String from the database, using the unique id
-			$this->ipbwi->ips_wrapper->DB->query('SELECT regcode from '.$this->ipbwi->board['sql_tbl_prefix'].'reg_antispam WHERE regid="'.addslashes($uniqueId).'"');
+			$this->ipbwi->ips_wrapper->DB->query('SELECT captcha_string FROM '.$this->ipbwi->board['sql_tbl_prefix'].'captcha WHERE captcha_unique_id="'.addslashes($uniqueId).'"');
 			$row = $this->ipbwi->ips_wrapper->DB->fetch();
 			if(isset($row) && !empty($row)){
 				// Is not case sesetive! Maybe change later?
-				if(strtoupper($row['regcode']) == strtoupper($userCaptchaString)){
+				if(strtoupper($row['captcha_string']) == strtoupper($userCaptchaString)){
 					// Captcha was correct! Clear seassion and return true
 					$this->clearGdDatabase();
 					return true;
@@ -187,7 +187,7 @@
 				xmlHttp.onreadystatechange = function (){
 					if(xmlHttp.readyState == 4){
 						keycode_id = xmlHttp.responseText;
-						document.getElementById("anti_spam_image").src = unescape('{$this->ipbwi->getBoardVar('url')}index.php%3Fact%3Dcaptcha%26do%3DshowImage%26regid%3D') + keycode_id;
+						document.getElementById("anti_spam_image").src = unescape('{$this->ipbwi->getBoardVar('url')}index.php%3Fact%3Dcaptcha%26do%3DshowImage%26captcha_unique_id%3D') + keycode_id;
 						document.getElementById("anti_spam_session_id").value = keycode_id;
 					}
 				}
@@ -198,7 +198,7 @@
 AJAXCODE;
 				$ajaxLink = ' onclick="get_new_hash();" style="cursor:pointer;" title="Click here to refresh Spam-Image"';
 			}
-			$html	 =	'<p>'.$ajaxCode.'<img'.$ajaxLink.' src="'.$this->ipbwi->getBoardVar('url').'index.php?act=captcha&amp;do=showImage&amp;regid='.$uniqueId.'" alt="Code Bit" id="anti_spam_image" /></p>';
+			$html	 =	'<p>'.$ajaxCode.'<img'.$ajaxLink.' src="'.$this->ipbwi->getBoardVar('url').'index.php?act=captcha&amp;do=showImage&amp;captcha_unique_id='.$uniqueId.'" alt="Code Bit" id="anti_spam_image" /></p>';
 			$html	.=	'<p><input type="hidden" name="ipbwiCaptchaUniqueId" value="'.$this->uniqueId.'" id="anti_spam_session_id" /></p>';
 			$html	.=	'<p><strong>Insert Code</strong></p>';
 			$html	.=	'<p><input type="text" name="ipbwiCaptchaString" value="" id="keycode" /></p>';
@@ -214,7 +214,7 @@ AJAXCODE;
 		private function clearGdDatabase(){
 			$time  = time() - 60*3600;
 			// Delete all old entries and the seassion of the actual user
-			$this->ipbwi->ips_wrapper->DB->build_and_exec_query(array('delete' => 'reg_antispam', 'where'  => 'ctime < ' . $time.' OR ip_address = "'.$this->ipbwi->ips_wrapper->ip_address.'"'));
+			$this->ipbwi->ips_wrapper->DB->query('DELETE FROM '.$this->ipbwi->board['sql_tbl_prefix'].'captcha WHERE captcha_date < "'.$time.'" OR captcha_ipaddress = "'.$_SERVER['REMOTE_ADDR'].'"');
 			return true;
 		}
 		/**

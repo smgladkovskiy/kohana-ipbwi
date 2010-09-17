@@ -105,7 +105,7 @@
 					}else{
 						$info = $this->ipbwi->ips_wrapper->DB->fetch($sql);
 						
-						$this->ipbwi->ips_wrapper->parser->parse_smilies			= $row['use_emo'];
+						$this->ipbwi->ips_wrapper->parser->parse_smilies			= 1;
 						$this->ipbwi->ips_wrapper->parser->parse_html				= 0;
 						$this->ipbwi->ips_wrapper->parser->parse_nl2br				= 1;
 						$this->ipbwi->ips_wrapper->parser->parse_bbcode				= 1;
@@ -114,8 +114,10 @@
 						$allowedRichText = array('signature', 'pp_about_me');
 						
 						foreach($allowedRichText as $allowedRichText_field){
-							$info[$allowedRichText_field]	= $this->ipbwi->ips_wrapper->parser->preDisplayParse($info[$allowedRichText_field]);
-							$info[$allowedRichText_field]	= $this->ipbwi->makeSafe($info[$allowedRichText_field]);
+							if(isset($info[$allowedRichText_field])){
+								$info[$allowedRichText_field]	= $this->ipbwi->ips_wrapper->parser->preDisplayParse($info[$allowedRichText_field]);
+								$info[$allowedRichText_field]	= $this->ipbwi->makeSafe($info[$allowedRichText_field]);
+							}
 						}
 						
 						$this->ipbwi->cache->save('memberInfo', $userID, $info);
@@ -342,11 +344,12 @@
 		 * @param	string	$userName Username
 		 * @param	string	$password In plain text. Will be encrypted with md5()
 		 * @param	string	$email Mail
-		 * @param	array	$customFields Optional values for the (existing) custom profile fields. default: true
-		 * @param	boolean	$validate Whether to put the user in the validation group
+		 * @param	array	$customFields Optional values for the (existing) custom profile fields.
+		 * @param	boolean	$validate possible values: user, admin, admin_user, default: board settings
 		 * @param	string	$displayName Display name, default: false (username = displayname)
 		 * @param	boolean	$allowAdminMail Whether to allow emails from admins, default: true
 		 * @param	boolean	$allowMemberMail Whether to allow emails from other members, default: false
+		 * @param	boolean	$captchaCheck Decide if you want to protect registrations through captcha check. You have to use methods of antispam-class if you have captcha check enabled. Possible values: none, default (GD based), recaptcha. standard settings: board settings
 		 * @return	long	New Member ID or false on failure
 		 * @author			Matthias Reuter
 		 * @sample
@@ -356,7 +359,7 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function create($userName, $password, $email, $customFields = array(), $validate = false, $displayName = false, $allowAdminMail = true, $allowMemberMail = false){
+		public function create($userName, $password, $email, $customFields = array(), $validate = false, $displayName = false, $allowAdminMail = true, $allowMemberMail = false, $captchaCheck = false){
 			$member							= $customFields;
 			$member['UserName']				= $userName;
 			$member['PassWord']				= $password;
@@ -366,7 +369,14 @@
 			$member['members_display_name']	= $displayName ? $displayName : $userName;
 			$member['allow_admin_mail']		= $allowAdminMail;
 			$member['allow_member_mail']	= $allowMemberMail;
-			$member['reg_auth_type']		= $validate;
+			if($validate !== false){
+				$member['reg_auth_type']	= $validate;
+			}else{
+				$member['reg_auth_type']	= $this->ipbwi->getBoardVar('reg_auth_type');
+			}
+			if($captchaCheck !== false){
+				$member['bot_antispam_type'] = $captchaCheck;
+			}
 
 			$this->ipbwi->ips_wrapper->register->create($member);
 
@@ -689,17 +699,16 @@
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('membersOnly'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;
 			}
-			if(strlen($newSig) > $this->ipbwi->ips_wrapper->vars['max_sig_length']){
+			if(strlen($newSig) > $this->ipbwi->ips_wrapper->settings['max_sig_length']){
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('sigTooLong'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;
 			}
-			if($this->ipbwi->ips_wrapper->vars['sig_allow_ibc']){
-				$this->ipbwi->ips_wrapper->parser->parse_html		= $this->ipbwi->ips_wrapper->vars['sig_allow_html'];
-				$this->ipbwi->ips_wrapper->parser->parse_bbcode		= $this->ipbwi->ips_wrapper->vars['sig_allow_ibc'];
+			if($this->ipbwi->ips_wrapper->settings['sig_allow_ibc']){
+				$this->ipbwi->ips_wrapper->parser->parse_html		= $this->ipbwi->ips_wrapper->settings['sig_allow_html'];
+				$this->ipbwi->ips_wrapper->parser->parse_bbcode		= $this->ipbwi->ips_wrapper->settings['sig_allow_ibc'];
 				$this->ipbwi->ips_wrapper->parser->strip_quotes		= 1;
 				$this->ipbwi->ips_wrapper->parser->parse_nl2br		= 1;
-				$newSig = $this->ipbwi->ips_wrapper->parser->pre_db_parse(stripslashes($newSig));
-				$newSig = $this->ipbwi->ips_wrapper->parser->pre_display_parse($newSig);
+				$newSig = $this->ipbwi->ips_wrapper->parser->preDbParse(stripslashes($newSig));
 			}
 			$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'profile_portal SET signature="'.$this->ipbwi->makeSafe($newSig).'" WHERE pp_member_id="'.$this->ipbwi->member->myInfo['member_id'].'"');
 			return true;
@@ -785,7 +794,8 @@
 				return false;
 			}
 			
-			$this->ipbwi->ips_wrapper->memberFunctions->uploadPhoto($this->lang->memberData['member_id']);
+			return false;
+			//$this->ipbwi->ips_wrapper->memberFunctions->uploadPhoto($this->lang->memberData['member_id']);
 			
 /*
 			// Remove Photo
@@ -1068,6 +1078,7 @@
 		 * <br>'limit' default: '30' no. of members per page
 		 * <br>'orderby' default: 'name' other keys see below
 		 * <br>'group' default: '*' all groups. You can specifiy a number or list of numbers
+		 * <br>'extra_groups' default: false no extra groups. Turn to true to get extra-groups, too.
 		 *
 		 * Sort keys: any field from '.$this->ipbwi->board['sql_tbl_prefix'].'members or '.$this->ipbwi->board['sql_tbl_prefix'].'groups.
 		 * To avoid trouble ordering by a field 'xxx', use <b>m.XXX</b> or <b>g.XXX</b> as
@@ -1081,7 +1092,7 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function getList($options = array('order' => 'asc', 'start' => '0', 'limit' => '30', 'orderby' => 'name', 'group' => '*')) {
+		public function getList($options = array('order' => 'asc', 'start' => '0', 'limit' => '30', 'orderby' => 'name', 'group' => '*', 'extra_groups' => false)) {
 			// Ordering
 			$orders = array('id', 'name', 'posts', 'joined');
 			if(!in_array($options['orderby'], $orders)){
@@ -1098,22 +1109,26 @@
 					$i = (int)$i;
 					if($i > 0){
 						if($where){
-							$where .= 'OR mgroup="'.$i.'" ';
+							$where .= 'OR m.member_group_id="'.$i.'" ';
 						}else{
-							$where .= 'mgroup="'.$i.'" ';
+							$where .= 'm.member_group_id="'.$i.'" ';
+						}
+						if ($options['extra_groups'])
+						{
+							$where .= 'OR FIND_IN_SET('.$i.', m.mgroup_others) ';
 						}
 					}
 				}
 			}
 			if($where){
-				$where = 'WHERE m.id != "0" AND ('.$where.')';
+				$where = 'WHERE m.member_id != "0" AND ('.$where.')';
 			}else{
-				$where = 'WHERE m.id != "0"';
+				$where = 'WHERE m.member_id != "0"';
 			}
-			$this->ipbwi->ips_wrapper->DB->query('SELECT m.*, g.*, cf.* FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members m LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.mgroup=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'pfields_content cf ON (cf.member_id=m.id) '.$where.' ORDER BY '.$options['orderby'].' '.$options['order'].' '.$filter);
+			$this->ipbwi->ips_wrapper->DB->query('SELECT m.*, g.*, cf.* FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members m LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.member_group_id=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'pfields_content cf ON (cf.member_id=m.member_id) '.$where.' ORDER BY '.$options['orderby'].' '.$options['order'].' '.$filter);
 			$return = array();
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch()){
-				$return[$row['id']] = $row;
+				$return[$row['member_id']] = $row;
 			}
 			return $return;
 		}

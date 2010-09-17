@@ -24,9 +24,11 @@ class ipbwi_ips_public_core_global_register extends public_core_global_register 
 	// set request for registration
 	public function create($request){
 		$this->request = $request;
-		$this->settings['bot_antispam'] = false; // disable captcha
-		$this->settings['reg_auth_type'] = $request['reg_auth_type']; // set validation
-		$this->registerProcessForm(); // @ todo: check notices from ip.board
+		$this->request['coppa_user']			= 0;
+		$this->settings['reg_auth_type'] 		= $request['reg_auth_type']; // set validation
+		$this->settings['bot_antispam_type']	= $request['bot_antispam_type'];
+		
+		@$this->registerProcessForm(); // @ todo: check notices from ip.board
 	}
 	
 	// catch registration errors

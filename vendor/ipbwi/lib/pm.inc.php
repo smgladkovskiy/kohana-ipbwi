@@ -625,7 +625,7 @@
 		 * @param	int		$toID Member ID to receive the message
 		 * @param	string	$title Message title
 		 * @param	string	$message Message body
-		 * @param	array	$cc Array of ID for carbon copies (CC)
+		 * @param	array	$cc Array of Display User Names for carbon copies (CC)
 		 * @param	int		$sentfolder Default: 0=do not save message in Sent folder, 1=save message
 		 * @return	bool	true on success, otherwise false
 		 * @author			Matthias Reuter
@@ -635,7 +635,7 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function send($toID, $title, $message, $cc = array(), $sentfolder = '0'){
+		public function send($toID, $title, $message, $inviteUsers = array(), $sentfolder = '0'){
 			if(!$this->ipbwi->member->isLoggedIn()){
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('membersOnly'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;

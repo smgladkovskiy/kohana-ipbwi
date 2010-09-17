@@ -38,7 +38,7 @@
 			$this->ipbwi->ips_wrapper->parser->parse_bbcode = 1;
 			$this->ipbwi->ips_wrapper->parser->strip_quotes = 1;
 			$this->ipbwi->ips_wrapper->parser->parse_nl2br = 1;
-			$input = @$$this->ipbwi->ips_wrapper->parser->preDbParse($input);
+			$input = @$this->ipbwi->ips_wrapper->parser->preDbParse($input);
 			// Leave this here in case things go pear-shaped...
 			$input = $this->ipbwi->ips_wrapper->parser->preDisplayParse($input);
 			if($smilies){
@@ -104,10 +104,10 @@
 		 * @since			2.0
 		 */
 		public function printTextEditor($post='',$field='post',$output=false,$rte=false){
-			$boardURL = $this->ipbwi->board['url'];
+			$boardURL = str_replace('?','',$this->ipbwi->board['url']);
 		
 			$style = '
-				<link rel="stylesheet" type="text/css" media="screen" href="'.$boardURL.'public/min/index.php?f=public/style_css/css_1/ipb_editor.css" />
+				<link rel="stylesheet" type="text/css" media="screen" href="'.$boardURL.'public/min/index.php?ipbv=31005&amp;f=public/style_css/css_1/ipb_editor.css" />
 				<style type="text/css">
 					<!--
 						#ipboard_body ul, ol{
@@ -149,15 +149,15 @@ EOF_SCRIPT;
 			IPSText::getTextClass('bbcode')->parse_html			= 0;
 			IPSText::getTextClass('bbcode')->parse_wordwrap		= 0;
 			IPSText::getTextClass('bbcode')->bypass_badwords	= true;
+			IPSText::getTextClass('bbcode')->rte_width			= 200;
 			
 			$rte_post = IPSText::getTextClass('bbcode')->convertForRTE($post);
-			$rte_post = str_replace($search,$replace,$rte_post);
 			
 			$form = '<div id="ipboard_body">'.
 				str_replace(
 					array('<#EMO_DIR#>','undefined&amp;app=forums'),
 					array('default',$this->ipbwi->getBoardVar('url').'/index.php?app=forums'),
-				IPSText::getTextClass('editor')->showEditor($rte_post, $field))
+					@IPSText::getTextClass('editor')->showEditor($rte_post, $field))
 			.'</div>';
 			
 			// if user has set rich text editor

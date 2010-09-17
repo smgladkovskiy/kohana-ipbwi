@@ -18,11 +18,10 @@ class ipbwi_ips_wrapper extends apiCore {
 	public	$parser;
 	
 	public function __construct(){
-	
 		$this->init();
 		
 		$this->loggedIn					= (bool) $this->lang->memberData['member_id']; // status wether a member is logged in
-		$this->settings['base_url']		= $this->settings['board_url'].'?';
+		$this->settings['base_url']		= $this->settings['board_url'];
 		
 		// get common functions
 		require_once(ipbwi_BOARD_PATH.'admin/sources/base/ipsController.php');
@@ -54,7 +53,7 @@ class ipbwi_ips_wrapper extends apiCore {
 		
 		// deactivate redirect function
 		require_once(ipbwi_ROOT_PATH.'lib/ips/ips_output.inc.php');
-		$this->registry->output = new ipbwi_ips_output($this->registry);
+		$this->registry->output = new ipbwi_ips_output($this->registry, true);
 		
 		// get permission functions
 		require_once(ipbwi_BOARD_PATH.'admin/sources/classes/class_public_permissions.php');

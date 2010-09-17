@@ -18,6 +18,7 @@ class ipbwi_ips_output extends output {
 		$this->memberData	= $this->registry->member()->fetchMemberData();
 		$this->cache		= $this->registry->cache();
 		$this->caches		= $this->registry->cache()->fetchCaches();
+		
 	}
 	
 	// set request for registration
