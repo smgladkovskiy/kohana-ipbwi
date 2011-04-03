@@ -69,8 +69,8 @@
 			if(!$member){
 				$member = $this->ipbwi->member->myInfo['member_id'];
 			}
-			if($extra){
-				$sql_extra = ', SET mgroup_others="'.implode(',',$extra).'"';
+			if($extra !== false){
+				$sql_extra = ',mgroup_others="'.implode(',',$extra).'"';
 			}else{
 				$sql_extra = '';
 			}

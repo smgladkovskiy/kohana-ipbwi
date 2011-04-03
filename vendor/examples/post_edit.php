@@ -64,6 +64,6 @@
 	}else{
 		echo '<p>You have to deliver a post-id to view this example. <a href="post_add.php">Create one</a> and delete it from <a href="post_list.php">post-listing-page</a>.</p>';
 	}
+	
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>post/post.html">Post Documentation</a></p>
-<?php echo $footer; ?>

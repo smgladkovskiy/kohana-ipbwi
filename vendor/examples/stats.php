@@ -56,6 +56,5 @@
 				echo '<p>'.$member['members_display_name'].'</p>';
 			}
 		}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>stats/stats.html">Stats Documentation</a></p>
-<?php echo $footer; ?>

@@ -107,7 +107,7 @@
 			$boardURL = str_replace('?','',$this->ipbwi->board['url']);
 		
 			$style = '
-				<link rel="stylesheet" type="text/css" media="screen" href="'.$boardURL.'public/min/index.php?ipbv=31005&amp;f=public/style_css/css_1/ipb_editor.css" />
+				<link rel="stylesheet" type="text/css" media="screen" href="'.$boardURL.'public/min/index.php?ipbv=31005&amp;f=public/style_css/css_'.$this->ipbwi->skin->id().'/ipb_editor.css" />
 				<style type="text/css">
 					<!--
 						#ipboard_body ul, ol{
@@ -128,11 +128,14 @@
 <script type='text/javascript'>
 //<![CDATA[
 	/* ---- URLs ---- */
-	ipb.vars['base_url'] 			= '{$boardURL}index.php?&';
+	ipb.vars['base_url'] 			= '{$boardURL}index.php?';
 	ipb.vars['board_url']			= '{$boardURL}';
 	ipb.vars['loading_img'] 		= '{$boardURL}public/style_images/master/loading.gif';
 	ipb.vars['active_app']			= 'forums';
 	ipb.vars['upload_url']			= '{$boardURL}uploads';
+	
+	/* ---- Other ---- */
+	ipb.vars['use_rte']				= 1;
 	
 	/* Templates/Language */
 	ipb.templates['ajax_loading'] 	= "<div id='ajax_loading'>" + ipb.lang['loading'] + "</div>";
@@ -141,8 +144,8 @@
 <script type='text/javascript'>
 	Loader.boot();
 </script>
-<script type='text/javascript' src='http://root.pc-intern.com/development/projects.pc-intern.com/public/min/index.php?g=js'></script>
-<script type='text/javascript' src='http://root.pc-intern.com/development/projects.pc-intern.com/public/min/index.php?charset=UTF-8&amp;f=public/js/ipb.js,public/js/ips.editor.js' charset='UTF-8'></script>
+<script type='text/javascript' src='{$boardURL}public/min/index.php?ipbv=31005&amp;g=js'></script>
+<script type='text/javascript' src='{$boardURL}public/min/index.php?ipbv=31005&amp;charset=UTF-8&amp;f=public/js/ipb.js,public/js/ips.editor.js' charset='UTF-8'></script>
 EOF_SCRIPT;
 
 		
@@ -177,11 +180,7 @@ EOF_SCRIPT;
 			IPSText::getTextClass('bbcode')->parse_bbcode		= 1;
 			IPSText::getTextClass('bbcode')->parsing_section	= 'global';
 			
-			$std = '<div class="std_emo">';
-					foreach($this->listEmoticons(1) as $emoticon => $emoFile){
-						$std .= '<img onclick="insert(\' '.htmlentities($emoticon).' \',\' \')" src="'.$this->ipbwi->getBoardVar('emo_url').$emoFile.'" alt="'.htmlentities($emoticon).'" style="cursor:pointer;" /> ';
-					}
-			$std .= '</div><textarea name="post" class="std_text" cols="40" rows="10">'.IPSText::getTextClass('bbcode')->preEditParse($post).'</textarea>';
+			$std = '<textarea name="'.$field.'" class="std_text" cols="40" rows="10">'.IPSText::getTextClass('bbcode')->preEditParse($post).'</textarea>';
 			
 			return $std;
 			}

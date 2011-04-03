@@ -50,9 +50,8 @@
 			?>
 		</p>
 	</div>
-<?php } ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>topic/topic.html">Topic Documentation</a></p>
 <?php
+		}
 	}
 	echo $footer;
 ?>

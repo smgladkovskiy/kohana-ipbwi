@@ -109,6 +109,8 @@
 			}
 			// Take a look at secondary groups
 			$info['mgroup_others'] = substr($info['mgroup_others'],1,strlen($info['mgroup_others'])-2);
+			$info['mgroup_others'] = explode(',',$info['mgroup_others']);
+			$info['mgroup_others'] = implode(',',$info['mgroup_others']);
 			if($info['mgroup_others'] != ''){
 				$this->ipbwi->ips_wrapper->DB->query('SELECT '.$perm.' FROM '.$this->ipbwi->board['sql_tbl_prefix'].'groups WHERE g_id IN('.$info['mgroup_others'].')');
 				while($row = $this->ipbwi->ips_wrapper->DB->fetch()){

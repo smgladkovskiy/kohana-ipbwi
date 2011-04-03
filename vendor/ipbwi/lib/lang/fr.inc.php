@@ -11,8 +11,8 @@
 	 */
 
 	// Define Encoding and localisation
-	$encoding	= 'ISO-8859-1';
-	$local		= 'fr_FR';
+	$liblang['encoding']	= 'ISO-8859-1';
+	$liblang['local']		= 'fr_FR';
 
 	// attachment
 	$libLang['attachMimeNotFound']					= 'Le type MIME requis n\'est pas défini.';

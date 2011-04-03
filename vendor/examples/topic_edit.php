@@ -63,6 +63,7 @@
 		</form>
 <?php }else{ ?>
 	<p>You have to be logged in to view this example</p>
-<?php } ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>topic/topic.html">Topic Documentation</a></p>
-<?php echo $footer; ?>
+<?php
+	}
+echo $footer;
+?>

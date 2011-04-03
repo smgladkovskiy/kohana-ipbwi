@@ -48,5 +48,4 @@
 		<h3>Rating functions</h3>
 		<p>Topic-Rating: <?php if($topic['topic_rating_total'] > 0) echo round($topic['topic_rating_total']/$topic['topic_rating_hits'],0); else echo 0; ?>/5</p>
 		<?php if($ipbwi->member->isLoggedIn()){ ?><form action="topic_info.php" method="post"><p><select name="rate_value"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><input type="submit" name="rate_topic" value="Rate!" /></p></form><?php }else{ ?><a href="login.php">Login</a> to rate this topic<?php } ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>topic/topic.html">Topic Documentation</a></p>
 <?php echo $footer; ?>

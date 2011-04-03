@@ -17,7 +17,7 @@ $header = <<<EOF_HEADER
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>{$pageTitle} - IPBWI </title>
+		<title>{$pageTitle} - IPBWI</title>
 		<link rel="stylesheet" type="text/css" media="screen" href="{$webURL}lib/css/screen.css" />
 	</head>
 	<body>
@@ -35,7 +35,7 @@ $header = <<<EOF_HEADER
 			</script>
 		</div>
 		<div id="main">
-			<a href="{$webURL}"><img src="{$webURL}lib/img/logo_728x90.jpg" width="728" height="90" alt="IPB Website Integration" /></a>
+			<h2>IPBWI LIVE EXAMPLES <a href="{$webURL}">(Examples Home,</a> <a href="http://ipbwi.com">IPBWI Home)</a></h2>
 			<div style="margin:10px;">
 				<h3 style="margin-top:0px;">Module Examples</h3>
 				<table style="width:100%;">
@@ -65,7 +65,7 @@ $header = <<<EOF_HEADER
 										<ul style="margin:0px;padding:0px;">
 											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}stats.php">Stats</a></li>-->
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}skin.php">Skins</a></li>
-											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}anti_spam.php">Anti Spam</a></li>-->
+											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}anti_spam.php">Anti Spam</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}info.php">System Info</a></li>
 										</ul>
 									</td>
@@ -98,7 +98,7 @@ if($ipbwi->member->isLoggedIn()){
 }
 	$header .= '
 							</div>
-							<p style="border:2px solid #000;padding:10px;background-color:#FFFFAA;text-align:center;"><img src="'.ipbwi_WEB_URL.'lib/img/icons/32x32/actions/document-save.png" width="32" height="32" alt="Download" style="vertical-align:middle;" /> <a href="http://ipbwi.com/download/" style="text-decoration:none;font-weight:bold;">Download latest version</a></p>
+							<p style="border:2px solid #000;padding:10px;background-color:#FFFFAA;text-align:center;"><img src="'.ipbwi_WEB_URL.'lib/img/icons/32x32/actions/document-save.png" width="32" height="32" alt="Download" style="vertical-align:middle;" /> <a href="http://ipbwi.com/products/" style="text-decoration:none;font-weight:bold;">Download latest version</a></p>
 						</td>
 					</tr>
 				</table>

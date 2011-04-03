@@ -22,7 +22,7 @@
 			if(empty($_POST['keep_unread'])){
 				$_POST['keep_unread'] = 0;
 			}
-			if($deleted = $ipbwi->pm->emptyFolder($folder,$_POST['keep_unread'])){
+			if($deleted = $ipbwi->pm->folderFlush($folder,$_POST['keep_unread'])){
 				$ipbwi->addSystemMessage('Success','<strong>'.$deleted.'</strong> Messages deleted in Folder with ID <strong>'.$folder.'</strong>');
 			}
 		}
@@ -30,20 +30,20 @@
 	// Remove PM Folder
 	if(isset($_POST['delete'])){
 		foreach($_POST['delete'] as $folder){
-			if($ipbwi->pm->removeFolder($folder)){
+			if($ipbwi->pm->folderDelete($folder)){
 				$ipbwi->addSystemMessage('Success','Folder with ID <strong>'.$folder.'</strong> successful deleted.');
 			}
 		}
 	}
 	// Add PM Folder
 	if(isset($_POST['new_folder'])){
-		if($ipbwi->pm->addFolder($_POST['name'])){
+		if($ipbwi->pm->folderAdd($_POST['name'])){
 			$ipbwi->addSystemMessage('Success','Folder '.$_POST['name'].' successful created.');
 		}
 	}
 	// Rename PM Folder
 	if(isset($_POST['rename_folder'])){
-		if($ipbwi->pm->renameFolder($_POST['folder'],$_POST['new_name'])){
+		if($ipbwi->pm->folderRename($_POST['folder'],$_POST['new_name'])){
 			$ipbwi->addSystemMessage('Success','Folder successful renamed to <strong>'.$_POST['new_name'].'</strong>.');
 		}
 	}
@@ -62,17 +62,20 @@
 		// list PM folders
 		$folders = $ipbwi->pm->getFolders();
 		$folderOption = '';
-		foreach($folders as $folder){
-			if(empty($folder['count'])) $folder['count'] = false;
+		if(is_array($folders) && count($folders) > 0){
+			foreach($folders as $folder){
+				if(empty($folder['count'])){
+					$folder['count'] = false;
+				}
 				echo '
 				<tr>
-					<td>'.$folder['name'].'</td>
+					<td>'.$folder['real'].'</td>
 					<td>'.$folder['count'].'</td>
 					<td><input type="checkbox" name="empty[]" value="'.$folder['id'].'" /></td>
 					<td>
 				';
 				// delete folder
-				if($folder['id'] != 'in' && $folder['id'] != 'sent'){
+				if($folder['id'] != 'new' && $folder['id'] != 'myconvo' && $folder['id'] != 'drafts'){
 					echo '<input type="checkbox" name="delete[]" value="'.$folder['id'].'" />';
 				}else{
 					echo '<em>impossible</em>';
@@ -81,8 +84,9 @@
 					</td>
 				</tr>
 				';
-			// grab all folders to an option list for renaming-form
-			$folderOption .= '<option value="'.$folder['id'].'">'.$folder['name'].'</option>';
+				// grab all folders to an option list for renaming-form
+				$folderOption .= '<option value="'.$folder['id'].'">'.$folder['real'].'</option>';
+			}
 		}
 ?>
 		<tr><td colspan="3" style="text-align:center;"><input type="checkbox" name="keep_unread" value="1" /> Keep Unread PMs?</td><td>&nbsp;</td></tr>
@@ -105,6 +109,5 @@
 	<p>You have to <a href="member_login.php">login</a> to view this example</p>
 <?
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>pm/pm.html">Private Messaging Documentation</a></p>
-<?php echo $footer; ?>

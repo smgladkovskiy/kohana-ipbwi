@@ -65,6 +65,5 @@
 		<div class="info"><div class="i_important"><strong>Important Notice:</strong> If you are an Admin and change your group, you do not have access to the admin center of your IP.Board anymore. Login to you database and change your groupid <em>member_group_id</em> in table <em>'.$this->ipbwi->board['sql_tbl_prefix'].'members</em> to 4 to revert the changes on your admin-account.</div></div>
 <?php
 	}
+echo $footer;
 ?>
-		<p><a href="<?php echo ipbwi::DOCS; ?>group/group.html">Group Documentation</a></p>
-<?php echo $footer; ?>

@@ -22,6 +22,16 @@ if(!defined('ipbwi_BOARD_PATH')){
 }
 
 /**
+ * The full qualified filesystem path to the folder of your IPB Admin directory.
+ * You must add a trailing slash.
+ *
+ * Example path: '/home/public_html/community/forums/admin/'
+ */
+if(!defined('ipbwi_BOARD_ADMIN_PATH')){
+	define('ipbwi_BOARD_ADMIN_PATH',ipbwi_BOARD_PATH.'admin/');
+}
+
+/**
  * The full qualified filesystem path to the folder of your IPBWI installation.
  * You must add a trailing slash.
  *
@@ -61,7 +71,7 @@ if(!defined('ipbwi_COOKIE_DOMAIN')){
  * in UTF-8 encoding, otherwise turn to false to get them in ISO encoding.
  */
 if(!defined('ipbwi_UTF8')){
-	define('ipbwi_UTF8',FALSE);
+	define('ipbwi_UTF8', TRUE);
 }
 
 /**
@@ -69,7 +79,7 @@ if(!defined('ipbwi_UTF8')){
  * you are able to define it here.
  */
 if(!defined('ipbwi_DB_prefix')){
-	define('ipbwi_DB_prefix','forum_');
+	define('ipbwi_DB_prefix','ipbwi_');
 }
 
 /**
@@ -80,7 +90,7 @@ if(!defined('ipbwi_DB_prefix')){
  * By default, this uses the "en" (English) language pack.
  */
 if(!defined('ipbwi_LANG')){
-	define('ipbwi_LANG','ru');
+	define('ipbwi_LANG','en');
 }
 
 /**
@@ -94,7 +104,7 @@ if(!defined('ipbwi_LANG')){
  */
 
 if(!defined('ipbwi_OVERWRITE_ENCODING')){
-	define('ipbwi_OVERWRITE_ENCODING', false);
+	define('ipbwi_OVERWRITE_ENCODING', FALSE);
 }
 
 
@@ -109,14 +119,14 @@ if(!defined('ipbwi_OVERWRITE_ENCODING')){
   */
 
 if(!defined('ipbwi_OVERWRITE_LOCAL')){
-	define('ipbwi_OVERWRITE_LOCAL', false);
+	define('ipbwi_OVERWRITE_LOCAL', FALSE);
 }
 
 /**
  * The IPBWI captcha mode.
  *
  * Choose between 'gd' for forcing a GD based captcha, 'recaptcha' for using reCaptcha.
- * Otherwise you can choose 'auto', this will take * the method that is configured in
+ * Otherwise you can choose 'auto', this will take the method that is configured in
  * your IP.Board.
  */
 if(!defined('ipbwi_CAPTCHA_MODE')){
@@ -124,24 +134,23 @@ if(!defined('ipbwi_CAPTCHA_MODE')){
 }
 
 /**
- * The recaptcha private key from the board
- */
-if(!defined('ipbwi_RECAPTCHA_PRIVATE_KEY')){
-	define('ipbwi_RECAPTCHA_PRIVATE_KEY', '6LcpWAMAAAAAAETX5jHd9NlPtIHJA4G-ra3X2RQB');
-}
-
-/**
  * The recaptcha public key from the board
  */
 if(!defined('ipbwi_RECAPTCHA_PUBLIC_KEY')){
-	define('ipbwi_RECAPTCHA_PUBLIC_KEY', '6LcpWAMAAAAAAA4klDtDNuDH6LsGgBX5mBoJ3naK');
+	define('ipbwi_RECAPTCHA_PUBLIC_KEY', '6Lcl1rwSAAAAAG3JJSiAnTyAPwO8BQAZDegKIUIJ ');
 }
 
+/**
+ * The recaptcha private key from the board
+ */
+if(!defined('ipbwi_RECAPTCHA_PRIVATE_KEY')){
+	define('ipbwi_RECAPTCHA_PRIVATE_KEY', '6Lcl1rwSAAAAADYb2N92hphwEzV41gHwMmKme2wt ');
+}
 
 /**
  * Set on 'true' if you use the IPBWI in your IPB installation, otherwise 'false'
  */
 
  if(!defined('ipbwi_IN_IPB')){
-	define('ipbwi_IN_IPB', false);
+	define('ipbwi_IN_IPB', FALSE);
  }

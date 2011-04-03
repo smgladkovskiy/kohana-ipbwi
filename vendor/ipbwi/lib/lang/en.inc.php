@@ -11,8 +11,8 @@
 	 */
 
 	// Define Encoding and localisation
-	$encoding	= 'ISO-8859-1';
-	$local		= 'en_US';
+	$liblang['encoding']	= 'ISO-8859-1';
+	$liblang['local']		= 'en_US';
 
 	// attachment
 	$libLang['attachMimeNotFound']					= 'The requested mimetype is not defined.';

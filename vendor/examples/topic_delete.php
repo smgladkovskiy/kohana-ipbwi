@@ -27,6 +27,5 @@
 
 	// Error Output
 	echo $ipbwi->printSystemMessages();
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>topic/topic.html">Topic Documentation</a></p>
-<?php echo $footer; ?>

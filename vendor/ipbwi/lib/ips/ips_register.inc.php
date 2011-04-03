@@ -1,6 +1,6 @@
 <?php
 
-require_once(ipbwi_BOARD_PATH . 'admin/applications/core/modules_public/global/register.php' );
+require_once(ipbwi_BOARD_ADMIN_PATH.'applications/core/modules_public/global/register.php' );
 class ipbwi_ips_public_core_global_register extends public_core_global_register {
 
 	public $errors		= null;
@@ -27,6 +27,7 @@ class ipbwi_ips_public_core_global_register extends public_core_global_register 
 		$this->request['coppa_user']			= 0;
 		$this->settings['reg_auth_type'] 		= $request['reg_auth_type']; // set validation
 		$this->settings['bot_antispam_type']	= $request['bot_antispam_type'];
+		$this->settings['registration_qanda']	= 0;
 		
 		@$this->registerProcessForm(); // @ todo: check notices from ip.board
 	}

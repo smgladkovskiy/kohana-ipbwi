@@ -126,7 +126,7 @@
 				}
 			}
 			// Check for cache - if exists don't bother getting it again
-			if($cache = $this->ipbwi->cache->get('memberInfo', $userID)){
+			if($cache = $this->ipbwi->cache->get('memberInfo',$userID)){
 				return $cache;
 			}else{
 				// Return user info if UID given
@@ -150,7 +150,7 @@
 			// No Member ID specified? Go for the current users UID.
 			$member = $this->info($userID);
 			$avatar = IPSMember::buildAvatar($member);
-			$avatar = str_replace('http://www.gravatar.com/avatar/f4b24f6f1dad5d1dfb39dcb281897203?d=http%3A%2F%2Froot.pc-intern.com%2Fdevelopment%2Fprojects.pc-intern.com%2Fpublic%2Fstyle_avatars%2Fblank_avatar.gif','http://root.pc-intern.com/development/projects.pc-intern.com/public/style_images/master/profile/default_thumb.png',$avatar);
+			#$avatar = str_replace('http://www.gravatar.com/avatar/f4b24f6f1dad5d1dfb39dcb281897203?d=http%3A%2F%2Froot.pc-intern.com%2Fdevelopment%2Fprojects.pc-intern.com%2Fpublic%2Fstyle_avatars%2Fblank_avatar.gif','http://root.pc-intern.com/development/projects.pc-intern.com/public/style_images/master/profile/default_thumb.png',$avatar);
 			return $avatar;
 		}
 		/**
@@ -374,10 +374,7 @@
 			}else{
 				$member['reg_auth_type']	= $this->ipbwi->getBoardVar('reg_auth_type');
 			}
-			if($captchaCheck !== false){
-				$member['bot_antispam_type'] = $captchaCheck;
-			}
-
+			$member['bot_antispam_type'] = (($captchaCheck != '') ? $captchaCheck : 'none');
 			$this->ipbwi->ips_wrapper->register->create($member);
 
 			if(isset($this->ipbwi->ips_wrapper->register->errors)){
@@ -628,7 +625,7 @@
 				return false;
 			}
 			// update password
-			if($this->ipbwi->ips_wrapper->changePW($newPass,$userID,$currentPass)){
+			if($this->ipbwi->ips_wrapper->changePW($newPass,$info,$currentPass)){
 				return true;
 			}else{
 				return false;
@@ -1031,9 +1028,8 @@
 			}
 			if(isset($pw)){
 				$_POST['password'] = $pw;
-				$this->ipbwi->ips_wrapper->request['password'] = $pw;
+				$this->ipbwi->ips_wrapper->request['password'] = IPSText::parseCleanValue( urldecode($pw));
 			}
-			$_POST['rememberMe'] = $cookie ? '1' : false;
 			$status = $this->ipbwi->ips_wrapper->login->doLogin();
 			if(isset($status[2])){
 				$this->loggedIn = false;

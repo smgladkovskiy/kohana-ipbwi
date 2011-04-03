@@ -40,6 +40,5 @@
 		<p>Logout successfull</p>
 <?php
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>member/member.html">Member Documentation</a></p>
-<? echo $footer; ?>

@@ -66,7 +66,7 @@
 					$row['description'] = $this->ipbwi->properXHTML($row['description']);
 					$row['last_title'] = $this->ipbwi->properXHTML($row['last_title']);
 					$row['newest_title'] = $this->ipbwi->properXHTML($row['newest_title']);
-					$perms = $this->ipbwi->permissions->sort($row['permission_array']);
+					$perms = (isset($row['permission_array']) ? $this->ipbwi->permissions->sort($row['permission_array']) : false);
 					$row['read_perms']   = $perms['read_perms'];
 					$row['reply_perms']  = $perms['reply_perms'];
 					$row['start_perms']  = $perms['start_perms'];
@@ -93,12 +93,15 @@
 		 
 		private function getData($field){
 			// search in permission index
+			$perms = explode(',',$this->ipbwi->member->myInfo['g_perm_id']);
 			$query = 'SELECT perm_type_id, '.$field.' FROM '.$this->ipbwi->board['sql_tbl_prefix'].'permission_index WHERE perm_type = "forum"';
 			$sql = $this->ipbwi->ips_wrapper->DB->query($query);
 			$forums = array();
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch($sql)){
-				if(strpos($row[$field],','.$this->ipbwi->member->myInfo['g_perm_id'].',') !== false || $row[$field] == '*'){
-					$forums[$row['perm_type_id']]	= $row['perm_type_id'];
+				foreach($perms as $perm){
+					if(strpos($row[$field],','.$perm.',') !== false || $row[$field] == '*'){
+						$forums[$row['perm_type_id']]	= $row['perm_type_id'];
+					}
 				}
 			}
 			return $forums;
@@ -330,7 +333,7 @@
 				foreach($forums as $i){
 					if($outputType == 'html_form'){ // give every forum its own option-tag
 						$select = 'id,name';
-						$output .= '<option'.(($selectedID == $i['id']) ? ' selected="selected"' : '').(($i['parent_id'] == '-1') ? ' style="background-color:#2683AE;color:#FFF;font-weight:bold;"' : ' style="color:#666;"').' value="'.$i['id'].'">&nbsp;&nbsp;'.$indent.'&nbsp;&nbsp;'.$i['name'].'</option>';
+						$output .= '<option'.(($selectedID == $i['id']) ? ' selected="selected"' : '').((isset($i['parent_id']) && $i['parent_id'] == '-1') ? ' style="background-color:#2683AE;color:#FFF;font-weight:bold;"' : ' style="color:#666;"').' value="'.$i['id'].'">&nbsp;&nbsp;'.$indent.'&nbsp;&nbsp;'.$i['name'].'</option>';
 					}elseif($outputType == 'array'){ // merge all forum-data in one, big array
 						$select = '*';
 						$output[$i['id']] = $i;
@@ -359,11 +362,11 @@
 								$subforums[$row['id']]['id'] = $row['id'];
 								$subforums[$row['id']]['name'] = $this->ipbwi->properXHTML($row['name']);
 							}else{
-								$row['last_poster_name'] = $this->ipbwi->properXHTML($row['last_poster_name']);
-								$row['name'] = $this->ipbwi->properXHTML($row['name']);
-								$row['description'] = $this->ipbwi->properXHTML($row['description']);
-								$row['last_title'] = $this->ipbwi->properXHTML($row['last_title']);
-								$row['newest_title'] = $this->ipbwi->properXHTML($row['newest_title']);
+								if(isset($row['last_poster_name'])){ $row['last_poster_name'] = $this->ipbwi->properXHTML($row['last_poster_name']); }
+								if(isset($row['name'])){ $row['name'] = $this->ipbwi->properXHTML($row['name']); }
+								if(isset($row['description'])){ $row['description'] = $this->ipbwi->properXHTML($row['description']); }
+								if(isset($row['last_title'])){ $row['last_title'] = $this->ipbwi->properXHTML($row['last_title']); }
+								if(isset($row['newest_title'])){ $row['newest_title'] = $this->ipbwi->properXHTML($row['newest_title']); }
 								$subforums[$row['id']] = $row;
 							}
 						}
@@ -643,9 +646,10 @@
 			if($cache = $this->ipbwi->cache->get('listCategories', '1')){
 				return $cache;
 			}else{
-				$this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'forums WHERE parent_id = "-1"');
+				$query = $this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'forums WHERE parent_id = "-1"');
 				$cat = array();
-				while($row = $this->ipbwi->ips_wrapper->DB->fetch()){
+				if($this->ipbwi->ips_wrapper->DB->getTotalRows() == 0) return false;
+				while($row = $this->ipbwi->ips_wrapper->DB->fetch($query)){
 					$row['last_poster_name'] = $this->ipbwi->properXHTML($row['last_poster_name']);
 					$row['name'] = $this->ipbwi->properXHTML($row['name']);
 					$row['description'] = $this->ipbwi->properXHTML($row['description']);

@@ -12,6 +12,9 @@
 	 * @ignore
 	 */
 
+	ini_set('display_errors',1);
+	error_reporting(E_ALL);
+
 	// Initialization
 	$pageTitle = 'Anti Spam Protection';
 	require_once('../ipbwi/ipbwi.inc.php');
@@ -46,7 +49,6 @@
 			<?php echo $ipbwi->antispam->getHTML('anti_spam.php?renewImage=true'); ?>
 			<p><input type="submit" name="spam_control" value="Check!" /></p>
 		</form>
-		<p><a href="<?php echo ipbwi::DOCS; ?>antispam/antispam.html">Anti Spam Documentation</a></p>
 <?php
 	echo $footer;
 ?>

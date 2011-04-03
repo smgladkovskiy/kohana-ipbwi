@@ -92,6 +92,5 @@
 		</form>
 <?php
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>tagCloud/tagCloud.html">Tag Cloud Documentation</a></p>
-<?php echo $footer; ?>

@@ -64,6 +64,5 @@
 		<p>Go to the <a href="poll_info.php">Poll Informations.</a></p>
 <?php
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>poll/poll.html">Poll Documentation</a></p>
-<?php echo $footer; ?>

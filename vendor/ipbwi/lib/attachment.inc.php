@@ -140,11 +140,6 @@
 			}else{
 				$module = false;
 			}
-			if($bypassPerms === false){
-				$approved = ' AND attach_approved="1"';
-			}else{
-				$approved = false;
-			}
 			// get attachments list
 			if($module === false){
 				// more than one IDs?
@@ -160,7 +155,7 @@
 				}else{
 					$dbID = 'attach_id = "'.intval($IDs).'"';
 				}
-				$query = $this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'attachments WHERE ('.$dbID.')'.$approved.' ORDER BY attach_date DESC');
+				$query = $this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'attachments WHERE ('.$dbID.') ORDER BY attach_date DESC');
 			}else{
 				// more than one IDs?
 				if(is_array($IDs)){
@@ -175,7 +170,7 @@
 				}else{
 					$dbID = 'attach_rel_id = "'.intval($IDs).'"';
 				}
-				$query = $this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'attachments WHERE attach_rel_module = "'.$module.'"'.$approved.' AND ('.$dbID.') ORDER BY attach_date DESC');
+				$query = $this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'attachments WHERE attach_rel_module = "'.$module.'" AND ('.$dbID.') ORDER BY attach_date DESC');
 			}
 			if($this->ipbwi->ips_wrapper->DB->getTotalRows($query) == 0){
 				return false;
@@ -392,7 +387,6 @@
 						attach_post_key,
 						attach_msg,
 						attach_member_id,
-						attach_approved,
 						attach_filesize' .
 					')'.
 					'VALUES'.
@@ -411,7 +405,6 @@
 						"'.$hash.'",
 						"0",
 						"'.$member['id'].'",
-						"1",
 						"'.filesize($this->ipbwi->getBoardVar('upload_dir').$newFileName).'"'.
 					');';
 					if($this->ipbwi->ips_wrapper->DB->query($sql)){

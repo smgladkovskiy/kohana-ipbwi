@@ -18,8 +18,8 @@
 	require_once('../ipbwi/ipbwi.inc.php');
 	require_once('lib/php/includes.inc.php');
 
-	if(isset($_POST['post_add']) && $_POST['post_add'] != '' && isset($_POST['post']) && $_POST['post'] != ''){
-		if($ipbwi->post->create($ipbwi->topic->title2id($topicTitle),$_POST['post'],$_POST['useEmo'],$_POST['$useSig'])){
+	if(isset($_POST['post']) && $_POST['post'] != ''){
+		if($ipbwi->post->create($ipbwi->topic->title2id($topicTitle),$_POST['post'],$_POST['useEmo'],$_POST['useSig'])){
 			$ipbwi->addSystemMessage('Success','<strong>Post successful created!</strong> Click <a href="post_list.php">here</a> to view it.');
 		}
 	}
@@ -33,7 +33,7 @@
 ?>
 		<h2>Add a post to <?php echo $topicTitle; ?></h2>
 		<script type="text/javascript" src="<?php echo ipbwi_WEB_URL; ?>lib/js/bbcode_editor.js"></script>
-		<form action="post_add.php" name="post" method="post">
+		<form action="post_add.php" method="post">
 			<?php echo $ipbwi->bbcode->printTextEditor(); ?>
 			<p class="enable_emoticons">Enable Emoticons: <input type="checkbox" name="useEmo" value="1" checked="checked" /></p>
 			<p class="enable_signature">Enable Signature: <input type="checkbox" name="useSig" value="1" checked="checked" /></p>
@@ -45,8 +45,5 @@
 		<p><a href="member_login.php">Login</a> to add a post.</p>
 <?php
 	}
-?>
-<p><a href="<?php echo ipbwi::DOCS; ?>post/post.html">Post Documentation</a></p>
-<?php
-	echo $footer;
+echo $footer;
 ?>
