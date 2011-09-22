@@ -54,7 +54,7 @@
 			<p>Description: <input type="text" style="width:100%;" name="desc" value="<?php echo $topic['description']; ?>" /></p>
 			<div style="background-color:#FFF;border:1px solid #000;padding:10px;">
 				<div style="text-align:right;"><strong><a href="<?php echo $ipbwi->getBoardVar('url'); ?>index.php?showuser=<?php echo $topic['author_id']; ?>"><?php echo $ipbwi->member->id2displayname($topic['author_id']); ?></a> @ <span title="<?php echo $ipbwi->date($topic['start_date']); ?>"><?php echo $ipbwi->date($topic['start_date'],'%d. %B %Y'); ?></span></strong></div>
-				<p><textarea name="post" style="width:100%;height:200px;"><?php echo $topic['post_bbcode']; ?></textarea></p>
+				<p><?php echo $ipbwi->bbcode->printTextEditor($topic['post'],'post'); ?></p>
 				<p>Reason for Editing: <input type="text" style="width:100%;" name="reason" value="<?php echo $topic['post_edit_reason']; ?>" /></p>
 				<p>Enable Emoticons: <input type="checkbox" name="use_emo" value="1" <?php if(isset($topic['use_emo']) && $topic['use_emo'] == 1){ echo ' checked="checked"'; } ?> /></p>
 				<p>Enable Signature: <input type="checkbox" name="use_sig" value="1" <?php if(isset($topic['use_sig']) && $topic['use_sig'] == 1){ echo ' checked="checked"'; } ?> /></p>

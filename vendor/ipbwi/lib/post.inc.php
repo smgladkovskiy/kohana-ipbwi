@@ -482,6 +482,7 @@
 				$start = $settings['start'] ? intval($settings['start']) : 0;
 				
 				$query = 'SELECT m.*, p.*, t.forum_id, t.title AS topic_name, g.g_dohtml AS usedohtml FROM '.$this->ipbwi->board['sql_tbl_prefix'].'posts p LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'members m ON (p.author_id=m.member_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.member_group_id=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'topics t ON(p.topic_id=t.tid) WHERE p.pid != topic_firstpost AND '.$specificMember.$sqlwhere.'p.queued="0" ORDER BY '.$order.' LIMIT '.$start.','.$limit;
+
 				return $this->info(false, $settings['replacePostVars'], $settings['ipbwiLink'], array('sql' => $query),$topicinfo);
 			}else{
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('noPerms'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');

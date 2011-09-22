@@ -1,5 +1,4 @@
 <?php
-
 require_once(ipbwi_BOARD_ADMIN_PATH.'sources/classes/output/publicOutput.php' );
 class ipbwi_ips_output extends output {
 
@@ -27,5 +26,4 @@ class ipbwi_ips_output extends output {
 	}
 	
 }
-
 ?>

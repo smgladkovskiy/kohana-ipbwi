@@ -21,6 +21,10 @@
 		public function __construct($ipbwi){
 			// loads common classes
 			$this->ipbwi = $ipbwi;
+			
+			if(defined('IPBWIboardDB') && $this->ipbwi->board['sql_tbl_prefix_ipbwi_updated'] != true){
+				$this->ipbwi->board['sql_tbl_prefix']	= IPBWIboardDB.'.'.$this->ipbwi->board['sql_tbl_prefix'];
+			}
 
 			// checks if the current user is logged in
 			if($this->ipbwi->ips_wrapper->loggedIn == 0){
@@ -374,7 +378,8 @@
 			}else{
 				$member['reg_auth_type']	= $this->ipbwi->getBoardVar('reg_auth_type');
 			}
-			$member['bot_antispam_type'] = (($captchaCheck != '') ? $captchaCheck : 'none');
+			$member['bot_antispam_type']	= (($captchaCheck != '') ? $captchaCheck : 'none');
+			$member['agree_tos']			= 1;
 			$this->ipbwi->ips_wrapper->register->create($member);
 
 			if(isset($this->ipbwi->ips_wrapper->register->errors)){
@@ -1023,12 +1028,12 @@
 		 
 		public function login($user=false,$pw=false,$cookie=true,$anon=false){
 			if(isset($user)){
-				$_POST['username'] = $user;
-				$this->ipbwi->ips_wrapper->request['username'] = $user;
+				$_POST['ips_username'] = $user;
+				$this->ipbwi->ips_wrapper->request['ips_username'] = $user;
 			}
 			if(isset($pw)){
-				$_POST['password'] = $pw;
-				$this->ipbwi->ips_wrapper->request['password'] = IPSText::parseCleanValue( urldecode($pw));
+				$_POST['ips_password'] = $pw;
+				$this->ipbwi->ips_wrapper->request['ips_password'] = IPSText::parseCleanValue( urldecode($pw));
 			}
 			$status = $this->ipbwi->ips_wrapper->login->doLogin();
 			if(isset($status[2])){
@@ -1147,7 +1152,7 @@
 		 */
 		public function listOnlineMembers($detailed = false, $formatted = false, $show_anon = false, $order_by = 'running_time', $order = 'DESC', $separator = ', '){
 			// Grab the cut-off length in minutes from the board settings
-			$cutoff = $this->ipbwi->ips_wrapper->vars['au_cutoff'] ? $this->ipbwi->ips_wrapper->vars['au_cutoff'] : '15';
+			$cutoff = $this->ipbwi->getBoardVar('au_cutoff') ? $this->ipbwi->getBoardVar('au_cutoff') : '15';
 			// Create a timestamp for the current time, and subtract the cut-off length to get a timestamp in the past
 			$timecutoff = time()-($cutoff * 60);
 			if($formatted){
@@ -1159,7 +1164,7 @@
 						// Grab advanced info for the member so we have the display name, prefix and suffix
 						$member = $this->info($value);
 						// Create the html-formatted string
-						$link = '<a href="'.$this->ipbwi->getBoardVar('url').'index.php?showuser='.$value.'">'.$member['prefix'].$member['members_display_name'].$member['suffix'].'</a>';
+						$link = '<a href="'.$this->ipbwi->getBoardVar('url').'user/'.$value.'-'.$member['members_seo_name'].'/">'.$member['prefix'].$member['members_display_name'].$member['suffix'].'</a>';
 						$online[$key] = $link;
 					}
 					// Now we have an array full of html links... But that isn't very helpful to a PHP newbie. Lets just return an html string. Implode the array with $separator
@@ -1168,13 +1173,15 @@
 				}
 				// if we are happy to ignore logged-in members' requests to be anonymous, we need a slightly different database query.
 				if($show_anon){
-					$this->ipbwi->ips_wrapper->DB->query('SELECT member_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'sessions s WHERE s.member_id != "0" AND s.running_time > "'.$timecutoff.'" ORDER BY '.$order_by.' '.$order);
+					$query = 'SELECT member_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'sessions s WHERE s.member_id != "0" AND s.running_time > "'.$timecutoff.'" ORDER BY '.$order_by.' '.$order;
+					$sql = $this->ipbwi->ips_wrapper->DB->query($query);
 				}else{
 					// ok so this is the normal database query which should return the member IDs of all logged-in members. It does not return guests as they have no member ID :)
-					$this->ipbwi->ips_wrapper->DB->query('SELECT member_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'sessions s WHERE s.login_type != "1" AND s.member_id != "0" AND s.running_time > "'.$timecutoff.'" ORDER BY '.$order_by.' '.$order);
+					$query = 'SELECT member_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'sessions s WHERE s.login_type != "1" AND s.member_id != "0" AND s.running_time > "'.$timecutoff.'" ORDER BY '.$order_by.' '.$order;
+					$sql = $this->ipbwi->ips_wrapper->DB->query($query);
 				}
 				// For each result from the MySQL query, add the member's ID to the $options array with the key and value both equal to the member's ID
-				while($row = $this->ipbwi->ips_wrapper->DB->fetch()){
+				while($row = $this->ipbwi->ips_wrapper->DB->fetch($sql)){
 					$ID = $row['member_id'];
 					$online[$ID] = $ID;
 				}
@@ -1186,7 +1193,7 @@
 						// Grab advanced info for the member so we have the display name, prefix and suffix
 						$member = $this->info($value);
 						// Create the html-formatted string
-						$link = '<a href="'.$this->ipbwi->getBoardVar('url').'index.php?showuser='.$value.'">'.$member['prefix'].$member['members_display_name'].$member['suffix'].'</a>';
+						$link = '<a href="'.$this->ipbwi->getBoardVar('url').'user/'.$value.'-'.$member['members_seo_name'].'/">'.$member['prefix'].$member['members_display_name'].$member['suffix'].'</a>';
 						$online[$key] = $link;
 					}
 					// Now we have an array full of html links... But that isn't very helpful to a PHP newbie. Lets just return an html string. Implode the array with $separator
@@ -1258,24 +1265,21 @@
 		/**
 		 * @desc			Get an array of random members.
 		 * @param	int		$limit How many Member should be returned? default: 5
-		 * @param	string	$where For advanced requests: SQL-Statement to filter the output
 		 * @return	array	Random Members
 		 * @author			Matthias Reuter
 		 * @sample
 		 * <code>
 		 * $ipbwi->member->listRandomMembers();
-		 * $ipbwi->member->listRandomMembers(5,'posts!=0 AND me.avatar_location != "" AND me.avatar_location != "noavatar"');
+		 * $ipbwi->member->listRandomMembers(5);
 		 * </code>
 		 * @since			2.0
 		 */
-		public function listRandomMembers($limit = 5,$where = false){
-			if($where){
-				$where = 'WHERE '.$where;
-			}
-			$this->ipbwi->ips_wrapper->DB->query('SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members m LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'member_extra me ON (me.id=m.id)'.$where.' ORDER BY RAND() LIMIT '.intval($limit));
+		public function listRandomMembers($limit = 5){
+			$query = 'SELECT * FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members ORDER BY RAND() LIMIT 0,'.intval($limit);
+			$this->ipbwi->ips_wrapper->DB->query($query);
 			$random = array();
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch()){
-				$random[$row['id']] = $row;
+				$random[$row['member_id']] = $row;
 			}
 			return $random;
 		}

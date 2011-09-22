@@ -39,8 +39,10 @@
 			<p><?php echo $topic['post']; ?></p>
 			<?php if($topic['post_edit_reason']){ ?><p style="border:1px dashed #999;padding:5px;margin:10px;font-size:9px;">Edited by <?php if($topic['edit_name']){ ?><?php echo $topic['edit_name']; } ?> (Reason: &quot;<?php echo $topic['post_edit_reason']; ?>&quot;)</p><?php } ?>
 			<?php
-			foreach($topic['AttachmentNotInlineInfo'] as $attachList){
-				echo '<p>'.$attachList['ipbwiLink'].'</p>';
+			if(count($topic['AttachmentNotInlineInfo']) > 0){
+				foreach($topic['AttachmentNotInlineInfo'] as $attachList){
+					echo '<p>'.$attachList['ipbwiLink'].'</p>';
+				}
 			}
 			?>
 			<div style="text-align:right;"><strong><?php if($ipbwi->member->isAdmin()){ echo '<a onclick="if(confirm(\'Really delete this topic?\')){return true;}else{return false;}" href="topic_delete.php?topic_id='.$topic['tid'].'">delete</a> | '; } ?><a href="topic_edit.php">edit</a></strong></div>

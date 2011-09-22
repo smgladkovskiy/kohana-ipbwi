@@ -224,13 +224,14 @@
 						$edit = $user['members_display_name'];
 					}
 					$edited = $time;
+					
 					// Ah, so everything's gone through okay. Now for the finishing touch.
-					$this->ipbwi->ips_wrapper->parser->parse_bbcode	= $row['use_ibc'];
-					$this->ipbwi->ips_wrapper->parser->strip_quotes	= 1;
+					$this->ipbwi->ips_wrapper->parser->parse_bbcode		= $row['use_ibc'];
+					$this->ipbwi->ips_wrapper->parser->strip_quotes		= 1;
 					$this->ipbwi->ips_wrapper->parser->parse_nl2br		= 1;
-					$this->ipbwi->ips_wrapper->parser->parse_html		= $row['use_html'];
+					$this->ipbwi->ips_wrapper->parser->parse_html		= 0;
 					$this->ipbwi->ips_wrapper->parser->parse_smilies	= ($useEmo ? 1 : 0);
-					$post = $this->ipbwi->ips_wrapper->parser->pre_db_parse($apost);
+					$post = $this->ipbwi->ips_wrapper->parser->preDbParse($apost);
 					$post	= $this->ipbwi->makeSafe($post);
 					$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'topics SET title="'.$ptitle.'", description="'.$fdesc.'", state="'.$state.'", pinned="'.($pin ? 1 : 0).'", topic_open_time="'.$opened.'", topic_close_time="'.$closed.'", approved="'.($approve ? 1 : 0).'" WHERE tid="'.$topicID.'"');
 					$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'posts SET edit_time="'.$edited.'", post="'.$post.'", edit_name="'.$edit.'", post_edit_reason="'.$reason.'", use_emo="'.($useEmo ? 1 : 0).'", use_sig="'.($useSig ? 1 : 0).'" WHERE pid="'.$row['topic_firstpost'].'"');
@@ -392,7 +393,7 @@
 				return false;
 			}
 			// get topics
-			$query = $this->ipbwi->ips_wrapper->DB->query('SELECT tid FROM '.$this->ipbwi->board['sql_tbl_prefix'].'topics WHERE forum_id IN ('.implode(',', $expForum).') AND topic_hasattach!="0"'.$startLimit);
+			$query = $this->ipbwi->ips_wrapper->DB->query('SELECT tid FROM '.$this->ipbwi->board['sql_tbl_prefix'].'topics WHERE forum_id IN ('.implode(',', $expForum).')'.$startLimit);
 			if($this->ipbwi->ips_wrapper->DB->getTotalRows() == 0) return false;
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch($query)){
 				$topicIDs[] = $row['tid'];
@@ -514,7 +515,7 @@
 				// What shall I order it by guv?
 				$allowedorder = array('tid', 'title', 'posts', 'starter_name', 'starter_id', 'start_date', 'last_post', 'views', 'post_date');
 				if(isset($settings['orderby']) && in_array($settings['orderby'], $allowedorder)){
-					$order = $tb.$settings['orderby'].' '.(($settings['order'] == 'desc') ? 'DESC' : 'ASC');
+					$order = $tb.$settings['orderby'].' '.((strtolower($settings['order']) == 'desc') ? 'DESC' : 'ASC');
 				}elseif(isset($settings['orderby']) && $settings['orderby'] == 'random'){
 					$order = $tb.'RAND()';
 				}else{

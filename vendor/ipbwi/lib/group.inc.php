@@ -83,6 +83,11 @@
 			}else{
 				return false;
 			}
+			
+			// set DB to WP again
+			if(defined('IPBWIwpDB')){
+				$wpdb->query('USE '.IPBWIwpDB);
+			}
 		}
 		/**
 		 * @desc			Returns whether a member is in the specified group(s).

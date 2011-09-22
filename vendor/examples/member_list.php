@@ -6,7 +6,6 @@
 	 * @package			liveExample
 	 * @author			Matthias Reuter ($LastChangedBy: matthias $)
 	 * @license			http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License
-	 * @version			$LastChangedDate: 2008-09-19 18:49:53 +0000 (Fr, 19 Sep 2008) $
 	 * @since			2.0
 	 * @link			http://ipbwi.com
 	 * @ignore
@@ -25,25 +24,16 @@
 	if($ipbwi->member->isLoggedIn()){
 ?>
 	<h2>List random Members</h2>
-	<p>List members at least with more than one post and an existing avatar.</p>
+	<p>List 5 random members from board.</p>
 <?php
-		foreach($ipbwi->member->listRandomMembers(5,"posts!=0 AND me.avatar_location != '' AND me.avatar_location != 'noavatar'") as $random){
-			echo '<p><a href="'.$ipbwi->getBoardVar('url').'index.php?showuser='.$random['id'].'" title="'.$random['members_display_name'].'">'.$ipbwi->member->avatar($random['id']).'</a></p>'."\n";
+		foreach($ipbwi->member->listRandomMembers() as $random){
+			echo '<p><a href="'.$ipbwi->getBoardVar('url').'index.php?showuser='.$random['member_id'].'" title="'.$random['members_display_name'].'">'.$ipbwi->member->avatar($random['member_id']).'<br />'.$random['members_display_name'].'</a></p>'."\n";
 		}
 ?>
 	<h2>List online Members</h2>
-	<p>List members which are currently online.</p>
+	<p>List members who are currently online.</p>
 <?php
-		$onlineMembers = $ipbwi->member->listOnlineMembers(1,array('orderby' => 'running_time','order' => 'asc'));
-		if(isset($onlineMembers) && is_array($onlineMembers) && count($onlineMembers) > 0){
-			foreach($onlineMembers as $member){
-		        if(isset($i)){
-		            echo ', ';
-		        }
-		        echo '<a href="'.$ipbwi->getBoardVar('url').'?showuser='.$member['id'].'">'.$member['prefix'].$member['members_display_name'].$member['suffix'].'</a>';
-		    	$i = true;
-			}
-		}
+		echo $onlineMembers = $ipbwi->member->listOnlineMembers(true,true,false);
 	}else{
 ?>
 	<h3>Please login</h3>

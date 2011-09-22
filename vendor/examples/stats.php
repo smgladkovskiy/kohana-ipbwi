@@ -29,13 +29,13 @@
 <?php
 		$stats = $ipbwi->stats->board();
 		echo '
-		<p><strong>total replies:</strong> '.$stats['total_replies'].'</p>
-		<p><strong>total topics:</strong> '.$stats['total_topics'].'</p>
-		<p><strong>member count:</strong> '.$stats['mem_count'].'</p>
-		<p><strong>last member name:</strong> '.$stats['last_mem_name'].'</p>
-		<p><strong>last member id:</strong> '.$stats['last_mem_id'].'</p>
-		<p><strong>most count:</strong> '.$stats['most_count'].'</p>
-		<p><strong>most date:</strong> '.$ipbwi->date($stats['most_date']).'</p>
+		<p><strong>Total Posts:</strong> '.$stats['total_replies'].'</p>
+		<p><strong>Total Topics:</strong> '.$stats['total_topics'].'</p>
+		<p><strong>Total Members:</strong> '.$stats['mem_count'].'</p>
+		<p><strong>Newest Member:</strong> '.$stats['last_mem_name'].'</p>
+		<p><strong>Newest Member ID:</strong> '.$stats['last_mem_id'].'</p>
+		<p><strong>Online At Once Record:</strong> '.$stats['most_count'].'</p>
+		<p><strong>Online At Once Date:</strong> '.$ipbwi->date($stats['most_date']).'</p>
 		';
 ?>
 		<h3>Members Activity Statistics</h3>
