@@ -1,7 +1,7 @@
 	Invision Power Board Website Integration (IPBWI)
 		is a library of PHP functions, which will help you develop
 		advanced applications on your site.
-	Code (c) 2007-2010 IPBWI development team
+	Code (c) 2007-2011 IPBWI development team
 	Project Leader: Matthias Reuter
 	Project Website: http://ipbwi.com
 

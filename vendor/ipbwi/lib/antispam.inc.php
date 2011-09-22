@@ -63,12 +63,17 @@
 			case 'auto':
 				if($this->ipbwi->ips_wrapper->settings['bot_antispam_type'] == 'recaptcha'){
 					return $this->getRecaptchaHtml();
+				}elseif($this->ipbwi->ips_wrapper->settings['bot_antispam_type'] == 'none'){
+					return;
 				}else{
 					return $this->getGdHtml($ajaxUrl);
 				}
 				break;
+			case 'none':
+				return;
+				break;
 			default:
-				die('Wrong config Value, please check ipbwi_CAPTCHA_MODE');
+				die('Wrong config value, please check ipbwi_CAPTCHA_MODE');
 			}
 		}
 		/**
@@ -187,7 +192,7 @@
 				xmlHttp.onreadystatechange = function (){
 					if(xmlHttp.readyState == 4){
 						keycode_id = xmlHttp.responseText;
-						document.getElementById("anti_spam_image").src = unescape('{$this->ipbwi->getBoardVar('url')}index.php%3Fact%3Dcaptcha%26do%3DshowImage%26captcha_unique_id%3D') + keycode_id;
+						document.getElementById("anti_spam_image").src = unescape('{$this->ipbwi->getBoardVar('url')}index.php%3Fapp%3Dcore%26module%3Dglobal%26section%3Dcaptcha&do%3Dshowimage%26captcha_unique_id%3D') + keycode_id;
 						document.getElementById("anti_spam_session_id").value = keycode_id;
 					}
 				}
@@ -198,7 +203,7 @@
 AJAXCODE;
 				$ajaxLink = ' onclick="get_new_hash();" style="cursor:pointer;" title="Click here to refresh Spam-Image"';
 			}
-			$html	 =	'<p>'.$ajaxCode.'<img'.$ajaxLink.' src="'.$this->ipbwi->getBoardVar('url').'index.php?act=captcha&amp;do=showImage&amp;captcha_unique_id='.$uniqueId.'" alt="Code Bit" id="anti_spam_image" /></p>';
+			$html	 =	'<p>'.$ajaxCode.'<img'.$ajaxLink.' src="'.$this->ipbwi->getBoardVar('url').'index.php?app=core&module=global&section=captcha&do=showimage&captcha_unique_id='.$uniqueId.'" alt="Code Bit" id="anti_spam_image" /></p>';
 			$html	.=	'<p><input type="hidden" name="ipbwiCaptchaUniqueId" value="'.$this->uniqueId.'" id="anti_spam_session_id" /></p>';
 			$html	.=	'<p><strong>Insert Code</strong></p>';
 			$html	.=	'<p><input type="text" name="ipbwiCaptchaString" value="" id="keycode" /></p>';

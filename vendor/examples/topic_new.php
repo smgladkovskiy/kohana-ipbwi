@@ -43,6 +43,7 @@
 		</form>
 <?php }else{ ?>
 		<p>Please <a href="member_login.php">login</a> to add a topic.</p>
-<?php } ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>topic/topic.html">Topic Documentation</a></p>
-<?php echo $footer; ?>
+<?php
+	}
+echo $footer;
+?>

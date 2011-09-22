@@ -21,8 +21,8 @@
 ?>
 		<ul>
 			<li><a href="pm_new.php">New PM</a></li>
-			<!--<li><a href="pm_list.php">List PMs</a></li>
+			<li><a href="pm_list.php">List PMs</a></li>
 			<li><a href="pm_view.php">View PM</a></li>
-			<li><a href="pm_folder.php">Manage PM Folder</a></li>-->
+			<li><a href="pm_folder.php">Manage PM Folder</a></li>
 		</ul>
 <?php echo $footer; ?>

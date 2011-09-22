@@ -68,6 +68,5 @@
 			';
 		}
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>search/search.html">Search Documentation</a></p>
-<?php echo $footer; ?>

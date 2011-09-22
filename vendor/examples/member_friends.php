@@ -59,6 +59,5 @@ echo '
 	<p>You have to <a href="member_login.php">login</a> to view this example</p>
 <?
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>member/member.html">Member Documentation</a></p>
-<?php echo $footer; ?>

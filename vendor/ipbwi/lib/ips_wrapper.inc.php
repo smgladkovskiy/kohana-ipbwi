@@ -2,9 +2,18 @@
 
 define('IPB_THIS_SCRIPT', 'public');
 define( 'IN_IPB', 1 );
+define( 'IPS_IS_SHELL', TRUE); // make offlinemode possible without crashing IPBWI
 define( 'ALLOW_FURLS', FALSE ); // disable friendly url check
+define('CCS_GATEWAY_CALLED', 1);
+$_POST['rememberMe'] = 1; // hotfix for sticky cookies
 
-require_once(ipbwi_BOARD_PATH.'admin/api/api_core.php');
+if(file_exists(ipbwi_BOARD_ADMIN_PATH.'api/api_core.php') === false){
+	echo '<p><strong>Error:</strong> Board path is not correct: '.ipbwi_BOARD_PATH.'</p>';
+	define('IPBWI_INCORRECT_BOARD_PATH',true);
+}else{
+
+require_once(ipbwi_BOARD_ADMIN_PATH.'api/api_core.php');
+
 class ipbwi_ips_wrapper extends apiCore {
 	public	$loggedIn;
 	public	$DB;
@@ -21,14 +30,14 @@ class ipbwi_ips_wrapper extends apiCore {
 		$this->init();
 		
 		$this->loggedIn					= (bool) $this->lang->memberData['member_id']; // status wether a member is logged in
-		$this->settings['base_url']		= $this->settings['board_url'];
+		$this->settings['base_url']		= $this->settings['board_url'].'?';
 		
 		// get common functions
-		require_once(ipbwi_BOARD_PATH.'admin/sources/base/ipsController.php');
+		require_once(ipbwi_BOARD_ADMIN_PATH.'sources/base/ipsController.php');
 		$this->command		= new ipsCommand_default();
 		
 		// initialize session
-		require_once(ipbwi_BOARD_PATH.'admin/sources/classes/session/publicSessions.php');
+		require_once(ipbwi_BOARD_ADMIN_PATH.'sources/classes/session/publicSessions.php');
 		$this->session		= new publicSessions();
 
 		// prepare bbcode functions
@@ -37,9 +46,7 @@ class ipbwi_ips_wrapper extends apiCore {
 		// force ability of using rich text editor
 		$this->registry->member()->setProperty('_canUseRTE', TRUE );
 		
-		/*
-		MEMBER FUNCTIONS
-		*/
+		// MEMBER FUNCTIONS
 		
 		// get login / logout functions
 		require_once(ipbwi_ROOT_PATH.'lib/ips/ips_public_core_global_login.inc.php');
@@ -56,20 +63,20 @@ class ipbwi_ips_wrapper extends apiCore {
 		$this->registry->output = new ipbwi_ips_output($this->registry, true);
 		
 		// get permission functions
-		require_once(ipbwi_BOARD_PATH.'admin/sources/classes/class_public_permissions.php');
+		require_once(ipbwi_BOARD_ADMIN_PATH.'sources/classes/class_public_permissions.php');
 		$this->perm = new classPublicPermissions($this->registry);
 		
 		// get bbcode functions
-		require_once(ipbwi_BOARD_PATH.'admin/sources/handlers/han_parse_bbcode.php');
+		require_once(ipbwi_BOARD_ADMIN_PATH.'sources/handlers/han_parse_bbcode.php');
 		$this->parser = new parseBbcode($this->registry);
 		
 		// get messenger functions
-		require_once(ipbwi_BOARD_PATH.'admin/applications/members/sources/classes/messaging/messengerFunctions.php');
+		require_once(ipbwi_BOARD_ADMIN_PATH.'applications/members/sources/classes/messaging/messengerFunctions.php');
 		$this->messenger = new messengerFunctions($this->registry);
 		
 		// get member functions
-		/*require_once(ipbwi_BOARD_PATH.'admin/sources/classes/member/memberFunctions.php');
-		$this->memberFunctions = new memberFunctions($this->registry);*/
+		//require_once(ipbwi_BOARD_ADMIN_PATH.'sources/classes/member/memberFunctions.php');
+		//$this->memberFunctions = new memberFunctions($this->registry);
 		
 	}
 	
@@ -91,27 +98,58 @@ class ipbwi_ips_wrapper extends apiCore {
 	}
 	
 	// change user's pw
-	public function changePW($newPass, $userID = false, $currentPass = false){
-		$salt		= IPSMember::generatePasswordSalt(5);
-		$hash		= IPSMember::generateCompiledPasshash($salt, md5($newPass));
-
-		// check old pass
-		if($currentPass !== false){
-			$sql		= $this->DB->query('SELECT members_pass_hash,members_pass_salt FROM '.$this->settings['sql_tbl_prefix'].'members WHERE member_id="'.$userID.'"');
-			$info		= $this->DB->fetch($sql);
-			
-			$hash_old	= IPSMember::generateCompiledPasshash($info['members_pass_salt'], md5($currentPass));
-			
-			if($info['members_pass_hash'] != $hash_old){
-				return false;
-			}
-		}
+	public function changePW($newPass, $member, $currentPass = false){
+		//-----------------------------------------
+		// INIT
+		//-----------------------------------------
 		
-		$SQL = 'UPDATE '.$this->settings['sql_tbl_prefix'].'members SET members_pass_hash="'.$hash.'",members_pass_salt="'.$salt.'" WHERE member_id="'.$userID.'"';
+		$save_array = array();
 		
-		$this->DB->query($SQL);
-
-		return true;
+		//-----------------------------------------
+		// Generate a new random password
+		//-----------------------------------------
+		
+		$new_pass = IPSText::parseCleanValue( urldecode($newPass));
+		
+		//-----------------------------------------
+		// Generate a new salt
+		//-----------------------------------------
+		
+		$salt = IPSMember::generatePasswordSalt(5);
+		$salt = str_replace( '\\', "\\\\", $salt );
+		
+		//-----------------------------------------
+		// New log in key
+		//-----------------------------------------
+		
+		$key  = IPSMember::generateAutoLoginKey();
+		
+		//-----------------------------------------
+		// Update...
+		//-----------------------------------------
+		
+		$save_array['members_pass_salt']		= $salt;
+		$save_array['members_pass_hash']		= md5( md5($salt) . md5( $new_pass ) );
+		$save_array['member_login_key']			= $key;
+		$save_array['member_login_key_expire']	= $this->settings['login_key_expire'] * 60 * 60 * 24;
+		$save_array['failed_logins']			= null;
+		$save_array['failed_login_count']		= 0;
+		
+		//-----------------------------------------
+		// Load handler...
+		//-----------------------------------------
+		
+		$classToLoad = IPSLib::loadLibrary( IPS_ROOT_PATH . 'sources/handlers/han_login.php', 'han_login' );
+		$this->han_login =  new $classToLoad( $this->registry );
+		$this->han_login->init();
+		$this->han_login->changePass( $member['email'], md5( $new_pass ), $new_pass, $member );
+		
+		IPSMember::save( $member['member_id'], array( 'members' => $save_array ) );
+		
+		IPSMember::updatePassword( $member['member_id'], md5( $new_pass ) );
+		IPSLib::runMemberSync( 'onPassChange', $member['member_id'], $new_pass );
 	}
+}
+
 }
 ?>

@@ -33,7 +33,4 @@
 
 		<h3>html2bbcode</h3>
 		<pre><?php echo $ipbwi->bbcode->html2bbcode($ipbwi->bbcode->bbcode2html($bbCode)); ?></pre>
-
-		<h2>Function References</h2>
-		<p><a href="<?php echo ipbwi::DOCS; ?>bbcode/bbcode.html">BBcode Documentation</a></p>
 <?php echo $footer; ?>

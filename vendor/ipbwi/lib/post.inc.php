@@ -24,8 +24,8 @@
 		 * @desc			Adds a new post.
 		 * @param	int		$topicID Topic ID of the Post
 		 * @param	string	$post Message body
-		 * @param	bool	$disableemos Default: false = disable emoticons, true = enable
-		 * @param	bool	$disablesig Default: false = disable signatures, true = enable
+		 * @param	bool	$useEmo Default: true = enable emoticons, false = disable
+		 * @param	bool	$useSig Default: true = enable signatures, false = disable
 		 * @param	bool	$bypassPerms Default: false = repect board permission, true = bypass permissions
 		 * @param	string	$guestname Name for Guest user, Default: false
 		 * @return	int		New post ID or false on failure
@@ -37,11 +37,11 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function create($topicid, $post, $useEmo = false, $useSig = false, $bypassPerms = false, $guestname = false){
+		public function create($topicid, $post, $useEmo = true, $useSig = true, $bypassPerms = false, $guestname = false){
 			if($this->ipbwi->member->isLoggedIn()){
 				$postname = $this->ipbwi->member->myInfo['members_display_name'];
 			}elseif($guestname){
-				$postname = $this->ipbwi->ips_wrapper->vars['guest_name_pre'].$this->makeSafe($guestname).$this->ipbwi->ips_wrapper->vars['guest_name_suf'];
+				$postname = $this->ipbwi->ips_wrapper->settings['guest_name_pre'].$this->makeSafe($guestname).$this->ipbwi->ips_wrapper->settings['guest_name_suf'];
 			}else{
 				$postname = $this->ipbwi->member->myInfo['members_display_name'];
 			}
@@ -51,9 +51,9 @@
 				return false;
 			}
 			// Flooding
-			if($this->ipbwi->ips_wrapper->vars['flood_control'] AND !$this->ipbwi->permissions->has('g_avoid_flood')){
-				if((time() - $this->ipbwi->member->myInfo['last_post']) < $this->ipbwi->ips_wrapper->vars['flood_control']){
-					$this->ipbwi->addSystemMessage('Error',sprintf($this->ipbwi->getLibLang('floodControl'), $this->ipbwi->ips_wrapper->vars['flood_control']),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
+			if($this->ipbwi->ips_wrapper->settings['flood_control'] AND !$this->ipbwi->permissions->has('g_avoid_flood')){
+				if((time() - $this->ipbwi->member->myInfo['last_post']) < $this->ipbwi->ips_wrapper->settings['flood_control']){
+					$this->ipbwi->addSystemMessage('Error',sprintf($this->ipbwi->getLibLang('floodControl'), $this->ipbwi->ips_wrapper->settings['flood_control']),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 					return false;
 				}
 			}
@@ -135,7 +135,7 @@
 			// Update the Topics
 			$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'topics SET posts=posts-1 WHERE tid="'.$pInfo['topic_id'].'"');
 			// Finally update the forums
-			if($this->ipbwi->ips_wrapper->update_forum_cache($pInfo['forum_id'],array('posts' => -1))){
+			if($this->ipbwi->cache->updateForum($pInfo['forum_id'],array('posts' => -1))){
 				return true;
 			}else{
 				return false;
@@ -170,7 +170,7 @@
 				return false;
 			}
 			// Flooding
-			if($this->ipbwi->ips_wrapper->vars['flood_control'] AND !$this->ipbwi->permissions->has('g_avoid_flood') && ((time() - $this->ipbwi->member->myInfo['last_post']) < $this->ipbwi->ips_wrapper->vars['flood_control'])){
+			if($this->ipbwi->ips_wrapper->settings['flood_control'] AND !$this->ipbwi->permissions->has('g_avoid_flood') && ((time() - $this->ipbwi->member->myInfo['last_post']) < $this->ipbwi->ips_wrapper->settings['flood_control'])){
 				$this->ipbwi->addSystemMessage('Error',sprintf($this->ipbwi->getLibLang('floodControl'), $this->ips->vars['flood_control']),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;
 			}
@@ -241,7 +241,7 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function info($postID, $replacePostVars = true, $ipbwiLink = false, $list = false){
+		public function info($postID, $replacePostVars = true, $ipbwiLink = false, $list = false, $topicInfo = false){
 			if(isset($list['sql'])){
 				// allow SUB SELECT query joins
 				$this->ipbwi->ips_wrapper->DB->allow_sub_select=1;
@@ -262,6 +262,10 @@
 				return false;
 			}
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch($sql)){
+				// sort out posts which are the topic's first post (non-reply)
+				if($row['new_topic']){
+					continue;
+				}
 				// remember first array entry
 				if(empty($firstEntry)){
 					$firstEntry = $row['pid'];
@@ -270,14 +274,14 @@
 				$this->ipbwi->ips_wrapper->parser->parse_smilies			= $row['use_emo'];
 				$this->ipbwi->ips_wrapper->parser->parse_html				= 0;
 				$this->ipbwi->ips_wrapper->parser->parse_nl2br				= 1;
-				$this->ipbwi->ips_wrapper->parser->parse_bbcode				= $row['use_ibc'];
+				$this->ipbwi->ips_wrapper->parser->parse_bbcode				= (isset($row['use_ibc']) ? $row['use_ibc'] : 0);
 				$this->ipbwi->ips_wrapper->parser->parsing_section			= 'topics';
 				$this->ipbwi->ips_wrapper->parser->parsing_mgroup			= $row['member_group_id'];
 				$this->ipbwi->ips_wrapper->parser->parsing_mgroup_others	= $row['mgroup_others'];
 				
 				// make proper XHTML
 				$post[$row['pid']]										= $row;
-				$post[$row['pid']]['post']								= $this->ipbwi->properXHTML($this->ipbwi->ips_wrapper->parser->preDisplayParse($post[$row['pid']]['post']));
+				$post[$row['pid']]['post']								= $this->ipbwi->properXHTML($this->ipbwi->bbcode->bbcode2html($post[$row['pid']]['post']));
 				$post[$row['pid']]['post_title']						= $this->ipbwi->properXHTML($post[$row['pid']]['post_title']);
 				$post[$row['pid']]['topic_name']						= $this->ipbwi->properXHTML($post[$row['pid']]['topic_name']);
 				$post[$row['pid']]['post_edit_reason']					= $this->ipbwi->properXHTML($post[$row['pid']]['post_edit_reason']);
@@ -462,9 +466,7 @@
 					$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('noPerms'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 					return false;
 				}
-				
 			}
-			
 			if($cando){
 				// What shall I order it by guv?
 				$allowedorder = array('pid', 'author_id', 'author_name', 'post_date', 'post');
@@ -479,11 +481,12 @@
 				$limit = $settings['limit'] ? intval($settings['limit']) : 15;
 				$start = $settings['start'] ? intval($settings['start']) : 0;
 				
-				$query = 'SELECT m.*, p.*, t.forum_id, t.*, t.title AS topic_name, g.g_dohtml AS usedohtml FROM '.$this->ipbwi->board['sql_tbl_prefix'].'posts p LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'members m ON (p.author_id=m.member_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.member_group_id=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'topics t ON(p.topic_id=t.tid) WHERE p.pid != topic_firstpost AND '.$specificMember.$sqlwhere.'p.queued="0" ORDER BY '.$order.' LIMIT '.$start.','.$limit;
-				return $this->info(false, $settings['replacePostVars'], $settings['ipbwiLink'], array('sql' => $query));
+				$query = 'SELECT m.*, p.*, t.forum_id, t.title AS topic_name, g.g_dohtml AS usedohtml FROM '.$this->ipbwi->board['sql_tbl_prefix'].'posts p LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'members m ON (p.author_id=m.member_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.member_group_id=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'topics t ON(p.topic_id=t.tid) WHERE p.pid != topic_firstpost AND '.$specificMember.$sqlwhere.'p.queued="0" ORDER BY '.$order.' LIMIT '.$start.','.$limit;
+				return $this->info(false, $settings['replacePostVars'], $settings['ipbwiLink'], array('sql' => $query),$topicinfo);
 			}else{
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('noPerms'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;
 			}
 		}
 	}
+?>

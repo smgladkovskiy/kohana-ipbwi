@@ -30,6 +30,7 @@
 		 * @param	bool	$useSig set to true to enable signature in post
 		 * @param	bool	$bypassPerms set to true to bypass permissions
 		 * @param	string	$guestName Author's name for Guest
+		 * @param	string	$authorID Author's ID to set author of this topic
 		 * @return	int		topic ID if topic was created, otherwise false
 		 * @author			Matthias Reuter
 		 * @sample
@@ -39,18 +40,25 @@
 		 * </code>
 		 * @since			2.0
 		 */
-		public function create($forumID,$title,$post,$desc=false,$useEmo=true,$useSig=true,$bypassPerms=false,$guestName=false){
+		public function create($forumID,$title,$post,$desc=false,$useEmo=true,$useSig=true,$bypassPerms=false,$guestName=false,$authorID=false){
 			if(!$title){
 				$this->ipbwi->addSystemMessage('Error',$this->ipbwi->getLibLang('topicNoTitle'),'Located in file <strong>'.__FILE__.'</strong> at class <strong>'.__CLASS__.'</strong> in function <strong>'.__FUNCTION__.'</strong> on line #<strong>'.__LINE__.'</strong>');
 				return false;
 			}
-			if($this->ipbwi->member->isLoggedIn()){
-				$postName = $this->ipbwi->member->myInfo['members_display_name'];
+			if($authorID != false){
+				$newAuthorData	= $this->ipbwi->member->info($authorID);
+				$postName		= $newAuthorData['members_display_name'];
+				$postAuthorID	= $newAuthorData['member_id'];
 			}else{
-				if($guestName){
-					$postName = $this->ipbwi->ips_wrapper->vars['guest_name_pre'].$guestName.$this->ipbwi->ips_wrapper->vars['guest_name_suf'];
-				}else{
+				if($this->ipbwi->member->isLoggedIn()){
 					$postName = $this->ipbwi->member->myInfo['members_display_name'];
+					$postAuthorID = $this->ipbwi->member->myInfo['member_id'];
+				}else{
+					if($guestName){
+						$postName = $this->ipbwi->ips_wrapper->vars['guest_name_pre'].$guestName.$this->ipbwi->ips_wrapper->vars['guest_name_suf'];
+					}else{
+						$postName = $this->ipbwi->member->myInfo['members_display_name'];
+					}
 				}
 			}
 			// No Posting
@@ -77,8 +85,8 @@
 						$preview = 0;
 					}
 					$time = time();
-					// Insert Topic Bopic
-					$this->ipbwi->ips_wrapper->DB->query('INSERT INTO '.$this->ipbwi->board['sql_tbl_prefix'].'topics (title, description, state, posts, starter_id, start_date, last_poster_id, last_post, starter_name, last_poster_name, views, forum_id, approved, author_mode, pinned) VALUES ("'.$title.'", "'.$desc.'", "open", "0", "'.$this->ipbwi->member->myInfo['member_id'].'", "'.$time.'", "'.$this->ipbwi->member->myInfo['member_id'].'", "'.$time.'", "'.$postName.'", "'.$postName.'", "0", "'.$forumID.'", "'.($preview ? '0' : '1').'", "1", "0")');
+					// Insert Topic
+					$this->ipbwi->ips_wrapper->DB->query('INSERT INTO '.$this->ipbwi->board['sql_tbl_prefix'].'topics (title, description, state, posts, starter_id, start_date, last_poster_id, last_post, starter_name, last_poster_name, views, forum_id, approved, author_mode, pinned) VALUES ("'.$title.'", "'.$desc.'", "open", "0", "'.$postAuthorID.'", "'.$time.'", "'.$postAuthorID.'", "'.$time.'", "'.$postName.'", "'.$postName.'", "0", "'.$forumID.'", "'.($preview ? '0' : '1').'", "1", "0")');
 					$topicID = $this->ipbwi->ips_wrapper->DB->getInsertId();
 					$this->ipbwi->ips_wrapper->parser->parse_bbcode		= $row['use_ibc'];
 					$this->ipbwi->ips_wrapper->parser->strip_quotes		= 1;
@@ -90,15 +98,15 @@
 						$post	= $this->ipbwi->bbcode->html2bbcode($post);
 					}
 					$post	= $this->ipbwi->makeSafe($post);
-					$this->ipbwi->ips_wrapper->DB->query('INSERT INTO '.$this->ipbwi->board['sql_tbl_prefix'].'posts (author_id, author_name, use_emo, use_sig, ip_address, post_date, post, queued, topic_id, new_topic, icon_id, post_htmlstate) VALUES ("'.$this->ipbwi->member->myInfo['member_id'].'", "'.$postName.'", "'.($useEmo ? 1 : 0).'", "'.($useSig ? 1 : 0).'", "'.$_SERVER['REMOTE_ADDR'].'", "'.$time.'", "'.$post.'", "0", "'.$topicID.'", "1", "0", "'.$this->ipbwi->ips_wrapper->parser->parse_html.'")');
+					$this->ipbwi->ips_wrapper->DB->query('INSERT INTO '.$this->ipbwi->board['sql_tbl_prefix'].'posts (author_id, author_name, use_emo, use_sig, ip_address, post_date, post, queued, topic_id, new_topic, icon_id, post_htmlstate) VALUES ("'.$postAuthorID.'", "'.$postName.'", "'.($useEmo ? 1 : 0).'", "'.($useSig ? 1 : 0).'", "'.$_SERVER['REMOTE_ADDR'].'", "'.$time.'", "'.$post.'", "0", "'.$topicID.'", "1", "0", "'.$this->ipbwi->ips_wrapper->parser->parse_html.'")');
 					// Finally update the forums
 					$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'forums SET last_poster_id="'.$this->ipbwi->member->myInfo['member_id'].'", last_poster_name="'.$postName.'", topics=topics+1, last_post="'.$time.'", last_title="'.$title.'", last_id="'.$topicID.'" WHERE id="'.intval($forumID).'"');
 					// Oh yes, any update the post count for the user
 					if($this->ipbwi->member->myInfo['member_id'] != 0){
 						if($row['inc_postcount']){
-							$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'members SET posts=posts+1, last_post="'.time().'" WHERE member_id="'.$this->ipbwi->member->myInfo['member_id'].'" LIMIT 1');
+							$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'members SET posts=posts+1, last_post="'.time().'" WHERE member_id="'.$postAuthorID.'" LIMIT 1');
 						}else{
-							$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'members SET last_post="'.time().'" WHERE member_id="'.$this->ipbwi->member->myInfo['member_id'].'" LIMIT 1');
+							$this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'members SET last_post="'.time().'" WHERE member_id="'.$postAuthorID.'" LIMIT 1');
 						}
 					}
 					// And stats
@@ -375,10 +383,7 @@
 				}
 			}elseif($forumIDs == '*'){
 				// Get readable forums
-				$readable = $this->ipbwi->forum->getReadable();
-				foreach($readable as $i){
-					$expForum[] = intval($i['id']);
-				}
+				$expforum = $this->ipbwi->forum->getReadable();
 			}elseif($this->ipbwi->forum->isReadable(intval($forumIDs)) OR $bypassPerms){
 				$expForum[] = intval($forumIDs);
 			}
@@ -470,10 +475,7 @@
 				}
 			}elseif($forumIDs == '*'){
 				// Get readable forums
-				$readable = $this->ipbwi->forum->getReadable();
-				foreach($readable as $k){
-					$expforum[] = intval($k['id']);
-				}
+				$expforum = $this->ipbwi->forum->getReadable();
 			}elseif($this->ipbwi->forum->isReadable(intval($forumIDs)) OR $bypassPerms){
 				$expforum[] = intval($forumIDs);
 			}

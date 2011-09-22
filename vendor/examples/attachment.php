@@ -46,8 +46,5 @@
 <?php
 		}
 	}
-?>
-		<p><a href="<?php echo ipbwi::DOCS; ?>attachment/attachment.html">Attachment Documentation</a></p>
-<?php
 	echo $footer;
 ?>

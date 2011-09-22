@@ -1,6 +1,6 @@
 <?php
 
-require_once(ipbwi_BOARD_PATH . 'admin/applications/core/modules_public/global/login.php' );
+require_once(ipbwi_BOARD_ADMIN_PATH.'applications/core/modules_public/global/login.php');
 class ipbwi_ips_public_core_global_login extends public_core_global_login {
 
 	// load login handler. these functions are the base for login and logout
@@ -24,7 +24,7 @@ class ipbwi_ips_public_core_global_login extends public_core_global_login {
 	
 	public function doLogin()
     {
-		return @$this->han_login->verifyLogin(); // @ todo: check notices from ip.board
+		return $this->han_login->verifyLogin(); // @ todo: check notices from ip.board
 	}
 }
 

@@ -75,6 +75,5 @@ $css = $ipbwi->skin->css();
 			foreach($skinData as $name => $data){
 				echo '<p><strong>'.$name.':</strong> '.htmlentities($data).'</p>';
 			}
-		?>
-<p><a href="<?php echo ipbwi::DOCS; ?>skin/skin.html">Skin Documentation</a></p>
-<?php echo $footer; ?>
+echo $footer;
+?>

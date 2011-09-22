@@ -23,7 +23,7 @@
 		}
 		/**
 		 * @desc			Gets function results cache.
-		 * @param	string	$function SDK Method who's query results have been cached
+		 * @param	string	$function API Method who's query results have been cached
 		 * @param	string	$id Key to identify a query from the function
 		 * @return	mixed	Cached item or false if $key does not exist.
 		 * @author			Matthias Reuter
@@ -31,14 +31,14 @@
 		 */
 		public function get($function, $id){
 			if(array_key_exists($function, $this->data)){
-				return (array_key_exists($id, $this->data[$function])) ? $this->data[$function][$id] : FALSE;
+				return (array_key_exists($id, $this->data[$function])) ? $this->data[$function][$id] : false;
 			}else{
 				return false;
 			}
 		}
 		/**
 		 * @desc			Saves/Updates function results cache.
-		 * @param	string	$function SDK Method who's query results have been cached
+		 * @param	string	$function API Method who's query results have been cached
 		 * @param	string	$id Key to identify a query from the function
 		 * @param	string	$data Data being cached
 		 * @return	bool	true
@@ -51,7 +51,7 @@
 		}
 		/**
 		 * @desc			Attempts to find some value/object in the cache for cross variable assignments.
-		 * @param	string	$function SDK Method who's query results have been cached
+		 * @param	string	$function API Method who's query results have been cached
 		 * @param	string	$key Key to search for in this method's results
 		 * @return	mixed	value/object whatever found in cache
 		 * @author			Matthias Reuter
@@ -192,20 +192,24 @@
 				$count['posts'] = 0;
 			}
 			// grab data from new latest post in forum
-			$lastTopicInfo = array_values($this->ipbwi->topic->getList($forumID,array('limit' => 1,'orderby' => 'last_post')));
+			$topic = $this->ipbwi->topic->getList($forumID,array('limit' => 1,'orderby' => 'last_post'));
 			// Finally update the forum
-			$query = '
-				UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'forums SET
-				posts=posts+'.$count['posts'].',
-				topics=topics+'.$count['topics'].',
-				last_title="'.$lastTopicInfo[0]['title'].'",
-				last_id="'.$lastTopicInfo[0]['tid'].'",
-				newest_title="'.$lastTopicInfo[0]['title'].'",
-				newest_id="'.$lastTopicInfo[0]['tid'].'",
-				last_poster_name="'.$lastTopicInfo[0]['last_poster_name'].'",
-				last_poster_id="'.$lastTopicInfo[0]['last_poster_id'].'",
-				last_post="'.$lastTopicInfo[0]['last_post'].'"
-				WHERE id="'.$forumID.'"';
+			if($topic != false){
+				foreach($topic as $lastTopicInfo){
+					$query = '
+						UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'forums SET
+						posts=posts+'.$count['posts'].',
+						topics=topics+'.$count['topics'].',
+						last_title="'.$lastTopicInfo['title'].'",
+						last_id="'.$lastTopicInfo['tid'].'",
+						newest_title="'.$lastTopicInfo['title'].'",
+						newest_id="'.$lastTopicInfo['tid'].'",
+						last_poster_name="'.$lastTopicInfo['last_poster_name'].'",
+						last_poster_id="'.$lastTopicInfo['last_poster_id'].'",
+						last_post="'.$lastTopicInfo['last_post'].'"
+						WHERE id="'.$forumID.'"';
+				}
+			}
 			if($this->ipbwi->ips_wrapper->DB->query($query)
 			){
 				return true;
@@ -224,20 +228,53 @@
 			$ownerID = intval($ownerID);
 			$folders = $this->ipbwi->pm->getFolders();
 			foreach($folders as $folder){
-				$this->ipbwi->ips_wrapper->DB->query('SELECT COUNT(mt_id) AS count FROM '.$this->ipbwi->board['sql_tbl_prefix'].'message_topics WHERE mt_vid_folder="'.$folder['id'].'" AND mt_owner_id="'.$ownerID.'"');
-				if($message = $this->ipbwi->ips_wrapper->DB->fetch()){
-					$count[$folder['id']]['count'] = $message['count'];
-					$count[$folder['id']]['name'] = $folder['name'];
+			
+				$sql = 'SELECT COUNT(t.mt_id) AS count FROM '.$this->ipbwi->board['sql_tbl_prefix'].'message_topics t LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'message_topic_user_map m ON (m.map_topic_id=t.mt_id) WHERE m.map_folder_id="'.$folder['id'].'" AND m.map_user_id="'.$ownerID.'"';
+				$query = $this->ipbwi->ips_wrapper->DB->query($sql);
+				if($message = $this->ipbwi->ips_wrapper->DB->fetch($query)){
+					if(($folder['id'] != 'myconvo' || $folder['id'] != 'drafts' || $folder['id'] != 'new') && $folder['real'] == ''){
+					
+					}else{
+						if($folder['id'] == 'myconvo' && $folder['real'] == ''){
+							$folder['real']			= 'My Conversations';
+							$folder['protected']	= 1;
+						}elseif($folder['id'] == 'drafts' && $folder['real'] == ''){
+							$folder['real']			= 'Drafts';
+							$folder['protected']	= 1;
+						}elseif($folder['id'] == 'new' && $folder['real'] == ''){
+							$folder['real']			= 'New';
+							$folder['protected']	= 1;
+						}
+						
+						$count[$folder['id']]['id']			= $folder['id'];
+						$count[$folder['id']]['real']		= $folder['real'];
+						$count[$folder['id']]['count']		= $message['count'];
+						$count[$folder['id']]['protected']	= $folder['protected'];
+					}
 				}
 			}
-			$i = 0;
-			$vdirs = '';
-			foreach($count as $id => $detail){
-				if($i > 0) $pipe = '|'; else $pipe = false;
-				$vdirs .= $pipe.$id.':'.$detail['name'].';'.$detail['count'];
-				$i++;
+			
+			// if a default folder is still missed, recreate it
+			if(!isset($count['new']['id'])){
+				$count['new']['id']			= 'new';
+				$count['new']['real']			= 'New';
+				$count['new']['protected']		= 1;
+				$count['new']['count']			= 0;
 			}
-			if($this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'member_extra SET vdirs="'.$vdirs.'" WHERE id="'. $ownerID.'"')){
+			if(!isset($count['myconvo']['id'])){
+				$count['myconvo']['id']		= 'myconvo';
+				$count['myconvo']['real']		= 'My Conversations';
+				$count['myconvo']['protected']	= 1;
+				$count['myconvo']['count']		= 0;
+			}
+			if(!isset($count['drafts']['id'])){
+				$count['drafts']['id']			= 'drafts';
+				$count['drafts']['real']		= 'Drafts';
+				$count['drafts']['protected']	= 1;
+				$count['drafts']['count']		= 0;
+			}
+		
+			if($this->ipbwi->ips_wrapper->DB->query('UPDATE '.$this->ipbwi->board['sql_tbl_prefix'].'profile_portal SET pconversation_filters="'.addslashes(serialize($count)).'" WHERE pp_member_id="'.$this->ipbwi->member->myInfo['member_id'].'" LIMIT 1')){
 				return true;
 			}else{
 				return false;

@@ -71,8 +71,6 @@
 	<p><?php if($ipbwi->member->isAdmin()){ ?>You are an <?php }else{ ?>You are not an <?php } ?>admin.</p>
 	<p><strong><?php echo $ipbwi->member->numNewPosts(); ?></strong> new posts since your last visit.</p>
 	<p>You have <strong><?php echo $ipbwi->member->pips(); ?></strong> pips, your Group Icon: <?php echo $ipbwi->member->icon(); ?></p>
-	<h2>Function References</h2>
-<p><a href="<?php echo ipbwi::DOCS; ?>member/member.html">Member Documentation</a></p>
 <?php
 	echo $footer;
 ?>

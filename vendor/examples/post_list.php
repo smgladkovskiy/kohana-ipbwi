@@ -54,8 +54,5 @@
 <?php
 		}
 	}
-?>
-<p><a href="<?php echo ipbwi::DOCS; ?>post/post.html">Post Documentation</a></p>
-<?php
 	echo $footer;
 ?>

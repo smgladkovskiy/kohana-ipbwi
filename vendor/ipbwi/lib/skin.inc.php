@@ -36,10 +36,10 @@
 		 */
 		public function id($memberID = false){
 			$member = $this->ipbwi->member->info(); // get user info...
-			if(isset($member['skin']) && $member['skin'] != ''){
+			if(isset($member['skin']) && $member['skin'] != '' && $member['skin'] != 0){
 				return $member['skin'];
 			}else{
-				$sql = $this->ipbwi->ips_wrapper->DB->query('SELECT set_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'skin_collections WHERE set_key = "default"');
+				$sql = $this->ipbwi->ips_wrapper->DB->query('SELECT set_id FROM '.$this->ipbwi->board['sql_tbl_prefix'].'skin_collections WHERE set_is_default = "1"');
 				if($row = $this->ipbwi->ips_wrapper->DB->fetch($sql)){
 					return $row['set_id'];
 				}else{
@@ -82,8 +82,7 @@
 		 */
 		public function emoDir(){
 			$member = $this->ipbwi->member->info(); // get user info...
-			
-			if(isset($member['skin']) && $member['skin'] != ''){ // for guests or if no skin is set...
+			if(isset($member['skin']) && $member['skin'] != '' && intval($member['skin']) > 0){ // for guests or if no skin is set...
 				$skinID		= $member['skin']; // ...for skin id
 				$default	= false; // ...make it the default skin
 			}else{
@@ -109,7 +108,7 @@
 		public function css(){
 			$member = $this->ipbwi->member->info(); // get user info...
 			
-			if(isset($member['skin']) && $member['skin'] != ''){ // for guests or if no skin is set...
+			if(isset($member['skin']) && $member['skin'] != '' && $member['skin'] != 0){ // for guests or if no skin is set...
 				$skinID		= $member['skin']; // ...for skin id
 				$default	= false; // ...make it the default skin
 			}else{
@@ -118,7 +117,7 @@
 			}
 			
 			// get css groups
-			$sql = $this->ipbwi->ips_wrapper->DB->query('SELECT set_css_groups,set_image_dir FROM '.$this->ipbwi->board['sql_tbl_prefix'].'skin_collections WHERE '.(($default === true) ? 'set_key = "default"' : ' set_id = '.$skinID));
+			$sql = $this->ipbwi->ips_wrapper->DB->query('SELECT set_css_groups,set_image_dir FROM '.$this->ipbwi->board['sql_tbl_prefix'].'skin_collections WHERE '.(($default === true) ? ('set_is_default = "1"') : (' set_id = '.$skinID)));
 			$skin = $this->ipbwi->ips_wrapper->DB->fetch($sql);
 			$CSSgroups = unserialize($skin['set_css_groups']);
 			$c = count($CSSgroups);

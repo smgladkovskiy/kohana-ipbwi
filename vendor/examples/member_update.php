@@ -37,9 +37,9 @@
 				$ipbwi->member->updatePassword($_POST['new_password'],false,$_POST['current_password']);
 			}
 			// update avatar
-			$ipbwi->member->updateAvatar('avatar_new',(isset($_POST['delete_avatar']) ? true : false));
+			//$ipbwi->member->updateAvatar('avatar_new',(isset($_POST['delete_avatar']) ? true : false));
 			// update photo
-			$ipbwi->member->updatePhoto('photo_new',(isset($_POST['delete_photo']) ? true : false));
+			//$ipbwi->member->updatePhoto('photo_new',(isset($_POST['delete_photo']) ? true : false));
 	}
 	$member = $ipbwi->member->info();
 	echo $header;
@@ -74,11 +74,39 @@
 				Day: <input style="width:20px;" type="text" name="bday_day" value="<?php echo $member['bday_day']; ?>" />
 				Month: <input style="width:20px;" type="text" name="bday_month" value="<?php echo $member['bday_month']; ?>" />
 				Year: <input style="width:40px;" type="text" name="bday_year" value="<?php echo $member['bday_year']; ?>" />
+				<select name="bday_month">
+					<option value="">--</option>
+<?php
+	$i = 1;
+	while($i <= 12){
+		echo '<option value="'.$i.'"'.(($i == $member['bday_month']) ? ' selected="selected"' : '').'>'.$ipbwi->getLibLang('month_'.$i).'</option>';
+		$i++;
+	}
+?>
+				</select>
+				<select name="bday_day">
+					<option value="">--</option>
+<?php
+	$i = 1;
+	while($i <= 31){
+		echo '<option value="'.$i.'"'.(($i == $member['bday_day']) ? ' selected="selected"' : '').'>'.$i.'</option>';
+		$i++;
+	}
+?>
+				</select>
+				<select name="bday_year">
+					<option value="">--</option>
+<?php
+	$i = $ipbwi->date(time(),'%Y');
+	while($i >= 1910){
+		echo '<option value="'.$i.'"'.(($i == $member['bday_year']) ? ' selected="selected"' : '').'>'.$i.'</option>';
+		$i--;
+	}
+?>
+				</select>
 			</td>
 		</tr>
 <?php
-	ini_set('display_errors',1);
-	error_reporting(E_ALL);
 	$fields = $ipbwi->member->listCustomFields();
 	if(is_array($fields) && count($fields) > 0){
 ?>
@@ -132,8 +160,7 @@
 <?php }else{ ?>
 	<h3>Please login</h3>
 	<p>You have to <a href="member_login.php">login</a> to view this example</p>
-<? } ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>member/member.html">Member Documentation</a></p>
-<?php
-	echo $footer;
+<?
+	}
+echo $footer;
 ?>

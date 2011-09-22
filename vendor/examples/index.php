@@ -72,72 +72,13 @@
 			<div class="info">
 				<div class="i_blank">
 					<p><strong>About IPBWI</strong><br />IPBWI (Invision Power Board Website Integration) allows you to create PHP applications that can interact with Invision Power Board (IPB). IPBWI contains more than 130 functions within a single class that can be used to simulate nearly all of the functions with Invision Power Board.</p>
-					<p><strong>Features List</strong><br />A small features-summary of this tool:</p>
-					<ul>
-						<li><p>Member Management (create, login, logout, view, edit, list, friends &amp; delete)</p></li>
-						<li><p>Forum Management (create, view &amp; delete)</p></li>
-						<li><p>Topic Management (create, view, edit, list &amp; delete)</p></li>
-						<li><p>Post Management (create, view, list &amp; delete)</p></li>
-						<li><p>Poll Management (create, vote &amp; view results)</p></li>
-						<li><p>Private Messages Management (send, save, view, list, move, delete, contact- &amp; folder-management)</p></li>
-						<li><p>Attachment Management (view (including replacing post-attachment-vars) &amp; download)</p></li>
-						<li><p>Group Management (view, check, change &amp; permission control)</p></li>
-						<li><p>Skin Management (change skin &amp; retrieve skin informations)</p></li>
-						<li><p>Stats (Board stats including Activity &amp; Birthdays)</p></li>
-						<li><p>Anti Spam Captcha check (including support for GD-based and reCaptcha based Captcha)</p></li>
-						<li><p>System Info which provides core informations about your IPBWI and PHP installation</p></li>
-						<li><p>Tag Cloud (generate cloud, add tag, list Urls)</p></li>
-					</ul>
 				</div>
 			</div>
-			<h3>Search via Forum-Search</h3>
-			<div class="info">
+			<h3>Top Sponsor</h3>
+			<div class="info" style="margin-bottom:10px;">
 				<div class="i_blank">
-					<p>Maybe your problem is already solved? Try searching in manual and support-forums.</p>
-					<form action="<?php echo ipbwi::WEBSITE; ?>examples/search.php" method="post">
-						<table>
-							<tr>
-								<td><p><input type="text" name="request" id="search" onfocus="myFocus('search')" onblur="myBlur('search')" /></p></td>
-								<td><p><input style="background-color:transparent;border:0px;" type="image" src="<?php echo ipbwi::WEBSITE; ?>examples/lib/img/icons/22x22/actions/system-search.png" name="search" value="Search!" /></p></td>
-							</tr>
-						</table>
-						<p>View search results...<br />
-							<input style="border:0px;background-color:transparent;" type="radio" name="site" value="ipbwi" checked="checked" /> <span class="bold">via IPBWI</span>
-							<input style="border:0px;background-color:transparent;" type="radio" name="site" value="ipb" /> via IPB
-						</p>
-						<p><input type="hidden" name="forums" value="148" /></p>
-					</form>
-				</div>
-			</div>
-			<h3>Search via Google-Search</h3>
-			<div class="info">
-				<div class="i_blank">
-					<!-- SiteSearch Google -->
-					<form method="get" action="<?php echo ipbwi::WEBSITE; ?>examples/search.php#google">
-						<p><input type="hidden" name="domains" value="ipbwi.com;projects.pc-intern.com" /></p>
-						<table>
-							<tr>
-								<td><p><input type="text" name="q" size="15" maxlength="255" value="" id="sbi" /></p></td>
-								<td><p><input style="background-color:transparent;border:0px;" type="image" src="<?php echo ipbwi::WEBSITE; ?>examples/lib/img/icons/22x22/actions/system-search.png" name="sa" value="Google Search" id="sbb" /></p></td>
-							</tr>
-						</table>
-						<p><input type="radio" name="sitesearch" value="ipbwi.com" checked="checked" id="ss1" /> ipbwi.com</p>
-						<p><input type="radio" name="sitesearch" value="projects.pc-intern.com" id="ss2" /> projects.pc-intern.com (Support Forum)</p>
-						<p><input type="radio" name="sitesearch" value="" id="ss0" /> Whole Web</p>
-						<p>
-							<input type="hidden" name="client" value="pub-9334906533208101" />
-							<input type="hidden" name="forid" value="1" />
-							<input type="hidden" name="channel" value="3493826355" />
-							<input type="hidden" name="ie" value="ISO-8859-1" />
-							<input type="hidden" name="oe" value="ISO-8859-1" />
-							<input type="hidden" name="safe" value="active" />
-							<input type="hidden" name="cof" value="GALT:#000000;GL:1;DIV:#FFFFCC;VLC:000000;AH:center;BGC:FFFFCC;LBGC:FFFFCC;ALC:FF6600;LC:FF6600;T:000000;GFNT:000000;GIMP:000000;LH:50;LW:390;L:<?php echo ipbwi::WEBSITE; ?>examples/lib/img/logo_468x60_google.jpg;S:<?php echo ipbwi::WEBSITE; ?>;FORID:11" />
-							<input type="hidden" name="hl" value="en" />
-							<input type="hidden" name="sig" value="_TAaDUJf-J01qler" />
-							<input type="hidden" name="engine" value="google" />
-						</p>
-					</form>
-					<!-- SiteSearch Google -->
+					<p><a href="http://totalenvironment.com" title="Total Environment Media - custom web and multimedia application development"><img src="lib/img/TEM-Logo.png" width="250" height="49" alt="Total Environment Media - custom web and multimedia application development" /></a></p>
+					<p>Big thanks to <a href="http://totalenvironment.com" title="Total Environment Media - custom web and multimedia application development"><strong>Total Environment Media</strong></a> for making IPBWI 3 release possible.</p>
 				</div>
 			</div>
 		</div>
@@ -161,60 +102,15 @@ echo '
 	echo '</div>';
 }
 ?>
-			<h3>Top Sponsor</h3>
-			<div class="info" style="margin-bottom:10px;">
-				<div class="i_blank">
-					<p><a href="http://totalenvironment.com" title="Total Environment Media - custom web and multimedia application development"><img src="lib/img/TEM-Logo.png" width="250" height="49" alt="Total Environment Media - custom web and multimedia application development" /></a></p>
-					<p>Big thanks to <a href="http://totalenvironment.com" title="Total Environment Media - custom web and multimedia application development"><strong>Total Environment Media</strong></a> for making IPBWI 3 release possible.</p>
-				</div>
-			</div>
 			<h3>Hard Facts</h3>
 			<div class="info" style="margin-bottom:10px;">
 				<div class="i_applications_internet">
 					<strong>Version</strong>
 					<ul>
-						<li><p>Version installed: <a href="http://projects.pc-intern.com/index.php?showtopic=5676&amp;view=getnewpost"><strong><?php echo ipbwi::VERSION; ?></strong></a></p></li>
+						<li><p>Version installed: <a href="http://ipbwi.com/products/"><strong><?php echo ipbwi::VERSION; ?></strong></a></p></li>
 						<li><p>Compatibility: PHP 5 or higher, IPB v3.x</p></li>
 						<li><p>License: <strong><a href="http://www.gnu.org/licenses/gpl.html">GPL 3.0 or higher</a></strong></p></li>
 					</ul>
-				</div>
-			</div>
-			<div class="info" style="margin-bottom:10px;">
-				<div class="i_help">
-					<strong>Help</strong>
-					<ul>
-						<li><p><a href="<?php echo ipbwi::WEBSITE; ?>">Official Website</a></p></li>
-						<li><p><a href="<?php echo ipbwi::DOCS; ?>">Official Documentation</a></p></li>
-						<li><p><a href="http://projects.pc-intern.com/index.php?showtopic=7821">Small Installation Guide</a></p></li>
-						<li><p><strong>Forum Support</strong></p></li>
-						<li><ul>
-							<li><p><a href="http://projects.pc-intern.com/index.php?showforum=149&amp;setlanguage=1&amp;langid=en">english</a> (official)</p></li>
-							<li><p><a href="http://projects.pc-intern.com/index.php?showforum=149&amp;setlanguage=1&amp;langid=2">german</a> (official)</p></li>
-							<li><p><a href="http://forums.invisionboard.fr/index.php?showforum=126">french</a> (unofficial)<br /> by invisionboard.fr</p></li>
-						</ul></li>
-					</ul>
-				</div>
-			</div>
-			<div class="info">
-				<div class="i_support">
-					<strong>Support this project</strong>
-					<ul>
-						<li><p><strong>Sponsorship</strong> by paying for Premium-Support or for creation of new functions you need immediately. <a href="<?php echo ipbwi::WEBSITE; ?>misc/sponsors.php">Details</a></p></li>
-						<li><p><strong>Send a Gift</strong> via <a href="http://amazon.de/gp/registry/wishlist/28YBVQTZM4MR0/303-7286227-7653041?reveal=unpurchased&amp;filter=all&amp;sort=priority&amp;layout=standard&amp;x=11&amp;y=12">Amazon Wishlist</a> (unfortunately german speech only). This should be used if you just want to honor the contributed time of the project leader.</p></li>
-						<li><p><strong>Add a Backlink</strong> from your site to <em><?php echo ipbwi::WEBSITE; ?></em> to spread this project.</p></li>
-					</ul>
-				</div>
-			</div>
-			<h3>Subversion (SVN) Access</h3>
-			<div class="info">
-				<div class="i_applications_internet">
-					<strong>Be up2date</strong>
-					<p>If you want to get access to the latest nightly build of code, you should connect to our SVN-Server.</p>
-					<p>Please be aware that on SVN released sourcecode isn't tested or valid, so be careful with using code from this location. If you decide to contribute any code to the project, SVN-Access helps you to be up2date.</p>
-					<p><strong>Just use the following Login-Datas for Webbrowser- or SVN-Access.</strong></p>
-					<p>URL: <a href="http://server1.pc-intern.com/svn/ipbwi_v2/">server1.pc-intern.com/svn/ipbwi_v2/</a></p>
-					<p>Username: ipbwi</p>
-					<p>Password: guest</p>
 				</div>
 			</div>
 		</div>

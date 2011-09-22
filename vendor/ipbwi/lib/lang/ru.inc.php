@@ -11,8 +11,8 @@
 	 */
 
 	// Define Encoding and localisation
-	$encoding	= 'WINDOWS-1251';
-	$local		= 'ru_RU';
+	$liblang['encoding']	= 'WINDOWS-1251';
+	$liblang['local']		= 'ru_RU';
 
 	// attachment
 	$libLang['attachMimeNotFound']					= 'Запрошенный mimetype не.';

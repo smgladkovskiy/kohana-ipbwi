@@ -17,11 +17,11 @@
 	require_once('lib/php/includes.inc.php');
 
 	if(isset($_POST['write_pm'])){
-		if($ipbwi->pm->send($ipbwi->member->displayname2id($_POST['tomember']),$_POST['subject'],$_POST['post'],array(),$_POST['sentitems'])){
+		if($ipbwi->pm->send($ipbwi->member->displayname2id($_POST['tomember']),$_POST['subject'],$_POST['post'])){
 			$ipbwi->addSystemMessage('Success','PM successfully sent.');
 		}
 	}elseif(isset($_POST['save_pm'])){
-		if($ipbwi->pm->save($ipbwi->member->displayname2id($_POST['tomember']),$_POST['subject'],$_POST['post'])){
+		if($ipbwi->pm->send($ipbwi->member->displayname2id($_POST['tomember']),$_POST['subject'],$_POST['post'],false,$options=array('isDraft' => 1))){
 			$ipbwi->addSystemMessage('Success','PM successfully saved.');
 		}
 	}
@@ -39,8 +39,7 @@
 			<tr><td>Recipients Display Name</td><td><input type="text" name="tomember" /></td></tr>
 			<tr><td>Title</td><td><input type="text" name="subject" /></td></tr>
 			<tr><td style="vertical-align:top;">Your Message</td><td><?php echo $ipbwi->bbcode->printTextEditor(); ?></td></tr>
-			<!--<tr><td><input type="checkbox" name="sentitems" value="1" /></td><td>Save in Sent-Items while sending</td></tr>-->
-			<tr><td></td><td style="text-align:right;"><input type="submit" name="save_pm" value="Save PM" /><input type="submit" name="write_pm" value="Send PM" /></td></tr>
+			<tr><td></td><td style="text-align:right;"><input type="submit" name="save_pm" value="Save as Draft" /><input type="submit" name="write_pm" value="Send PM" /></td></tr>
 		</table>
 		</form>
 <?php
@@ -50,6 +49,5 @@
 	<p>You have to <a href="member_login.php">login</a> to view this example</p>
 <?
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>pm/pm.html">Private Messaging Documentation</a></p>
-<?php echo $footer; ?>

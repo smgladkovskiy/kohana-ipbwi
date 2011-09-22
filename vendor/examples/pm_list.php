@@ -24,21 +24,24 @@
 
 	// get skin info
 	$skinData = $ipbwi->skin->info($ipbwi->skin->id());
-	$skinIMG = $ipbwi->getBoardVar('url').'style_images/'.$skinData['set_image_dir'];
+	$skinIMG = $ipbwi->getBoardVar('url').'public/style_images/'.$skinData['set_image_dir'].'/';
 
 	if($ipbwi->member->isLoggedIn()){
-		echo '<h3>Your Folders</h3><div style="margin:10px;float:right;">';
+		echo '
+		<h3>Your Folders</h3>
+		<div style="margin:20px 0px 20px 0px;">
+		';
 		// list PM folders
 		$folders = $ipbwi->pm->getFolders();
 		foreach($folders as $folder){
-			echo '<span style="border:1px dashed #000;padding:5px;margin:1px;"><a href="?folder_id='.$folder['id'].'">'.$folder['name'].'</a> ('.$folder['count'].')</span>';
+			echo '<span style="border:1px dashed #000;padding:5px;margin:1px;"><a href="?folder_id='.$folder['id'].'">'.$folder['real'].'</a> ('.$folder['count'].')</span>';
 		}
 		echo '</div>';
 		// get pm space usage
 ?>
 	<table style="width:300px;border:1px solid #000;background-color:#FFF;" border="1">
 		<tr><td colspan="3">Your folders are <?php echo $ipbwi->pm->spaceUsage(); ?>% full</td></tr>
-		<tr><td colspan="3" nowrap="nowrap" valign="middle"><img src="<?php echo $skinIMG; ?>/bar_left.gif" alt="*" border="0" /><img src="<?php echo $skinIMG; ?>/bar.gif" alt="" height="11" width="<?php echo $ipbwi->pm->spaceUsage(); ?>%" /><img src="<?php echo $skinIMG; ?>/bar_right.gif" alt="*" border="0" /></td></tr>
+		<tr><td colspan="3" nowrap="nowrap" valign="middle" style="background-color:#FFFFFF;border:1px solid #D5DDE5;height:20px;"><span style="background-color:#243F5C;"><img src="<?php echo $skinIMG; ?>gradient_bg.png" alt="" height="11" width="<?php echo $ipbwi->pm->spaceUsage(); ?>%" /></span></td></tr>
 		<tr><td style="vertical-align:middle;width:33%;">0%</td><td style="text-align:center;vertical-align:middle;width:33%;">50%</td><td style="text-align:right;vertical-align:middle;width:33%;">100%</td></tr>
 		<tr><td colspan="3">Total: <?php echo $ipbwi->pm->numTotalPMs(); ?> Messages (<?php echo $ipbwi->pm->numNewPMs(); ?> new)</td></tr>
 	</table>
@@ -47,16 +50,16 @@
 		if(isset($_GET['folder_id']) && $ipbwi->pm->folderExists($_GET['folder_id'])){
 			echo '
 			<h3>'.$ipbwi->pm->folderid2name($_GET['folder_id']).'</h3>
-			<p>Total: '.$ipbwi->pm->numFolderPMs($_GET['folder_id']).' Messages ('.$ipbwi->pm->numFolderUnreadPMs($_GET['folder_id']).' new)</p>
+			<p>Total: '.$ipbwi->pm->numFolderPMs($_GET['folder_id']).' Messages</p>
 			';
 			$PMs = $ipbwi->pm->getList($_GET['folder_id']);
 ?>
 	<table style="width:100%;" border="1" cellspacing="1" cellpadding="2">
-		<tr><th>Message Title</th><th>Recipient</th><th>Sender</th><th>Date</th></tr>
+		<tr><th>Topic</th><th>Starter</th><th>To</th><th>Last Message</th></tr>
 		<?php
 			if(is_array($PMs) && count($PMs) > 0){
 				foreach($PMs as $PM){
-					echo '<tr><td><a href="pm_view.php?pm_id='.$PM['mt_id'].'">'.$PM['mt_title'].'</a></td><td>'.$ipbwi->member->id2displayname($PM['mt_to_id']).'</td><td>'.$ipbwi->member->id2displayname($PM['mt_from_id']).'</td><td>'.$ipbwi->date($PM['msg_date']).'</td></tr>';
+					echo '<tr><td><a href="pm_view.php?pm_id='.$PM['mt_id'].'">'.$PM['mt_title'].'</a></td><td>'.$PM['members_display_name'].'</td><td>'.$ipbwi->member->id2displayname($PM['mt_to_member_id']).'</td><td>'.$ipbwi->date($PM['map_last_topic_reply']).'</td></tr>';
 				}
 			}
 		?>
@@ -72,6 +75,5 @@
 	<p>You have to <a href="member_login.php">login</a> to view this example</p>
 <?
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>pm/pm.html">Private Messaging Documentation</a></p>
-<?php echo $footer; ?>

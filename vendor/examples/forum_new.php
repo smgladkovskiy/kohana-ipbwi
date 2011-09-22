@@ -60,6 +60,5 @@
 		<p>You have to <a href="member_login.php">login</a> to use this live-example.</p>
 <?php
 	}
+echo $footer;
 ?>
-		<p><a href="<?php echo ipbwi::DOCS; ?>forum/forum.html">Forum Documentation</a></p>
-<?php echo $footer; ?>

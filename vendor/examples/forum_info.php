@@ -29,6 +29,4 @@
 		<h2><?php echo $forum['name']; ?></h2>
 		<p><strong><?php echo $forum['description']; ?></strong></p>
 		<p><a href="topic_info.php">IPBWI Test Topic</a></p>
-		<h2>Function References</h2>
-		<p><a href="<?php echo ipbwi::DOCS; ?>forum/forum.html">Forum Documentation</a></p>
 <?php echo $footer; ?>

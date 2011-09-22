@@ -60,62 +60,11 @@
 				<tr><td>Password*</td><td><input style="width: 200px;" name="password" type="password" /></td></tr>
 				<tr><td>Password*</td><td><input style="width: 200px;" name="password_control" type="password" /></td></tr>
 				<tr><td>Display Name</td><td><input style="width: 200px;" name="displayname" type="text" /></td></tr>
-<?php
-		$fields = $ipbwi->member->listCustomFields();
-		if(is_array($fields) && count($fields) > 0){
-?>
-				<tr><td colspan="2"><h3>Custom Profile Fields</h3></td></tr>
-<?php
-			foreach($fields as $field){
-				if($field['pf_show_on_reg'] == 1){
-?>
-				<tr>
-<?php
-				// if current custom field is an text-input-field
-				if($field['pf_type'] == 'text'){
-					echo '<td><p>'.$field['pf_title'].'</p><p style="font-size:9px;">'.$field['pf_desc'].'</p></td><td><input name="field_'.$field['pf_id'].'" value="'.$ipbwi->member->customFieldValue($field['pf_id']).'" /></td>';
-				// if current custom field is an text-area
-				}elseif($field['pf_type'] == 'area'){
-					echo '<td><p>'.$field['pf_title'].'</p><p style="font-size:9px;">'.$field['pf_desc'].'</p></td><td><textarea name="field_'.$field['pf_id'].'" rows="5" cols="30">'.$ipbwi->member->customFieldValue($field['pf_id']).'</textarea></td>';
-				// if current custom field is an drop-down-box
-				}elseif($field['pf_type'] == 'drop'){
-?>
-					<td>
-						<p><?php echo $field['pf_title']; ?></p>
-						<p style="font-size:9px;"><?php echo $field['pf_desc']; ?></p>
-					</td>
-					<td>
-						<select name="field_<?php echo $field['pf_id']; ?>">
-<?php
-					$fieldContentVar = split("[\n|]",$field['pf_content']); // split contentlines
-					for($x=0;$x<count($fieldContentVar);$x++){ // load all contentlines
-						$fieldContentSet = explode('=',$fieldContentVar[$x]); // explode var and set
-						if(count($fieldContentSet[1]) != 0){ // Prevent duplicate output
-							if($field['pf_type'] == 'drop'){
-								if($ipbwi->member->customFieldValue($field['pf_id']) == $fieldContentSet[0]){
-									$selected = ' selected="selected"'; }else{ $selected = '';
-								}
-								echo '<option value="'.$fieldContentSet[0].'"'.$selected.'>'.$fieldContentSet[1].'</option>';
-							}
-						}
-					}
-?>
-						</select>
-					</td>
-<?php
-				}
-?>
-				</tr>
-<?php
-				}
-			}
-		}
-?>
+				<?php echo $ipbwi->antispam->getHTML('anti_spam.php?renewImage=true'); ?>
 				<tr><td colspan="2"><input name="register" value="register" type="submit" /><input name="action" value="register" type="hidden" /></td></tr>
 			</table>
 		</form>
 <?php
 	}
+echo $footer;
 ?>
-<p><a href="<?php echo ipbwi::DOCS; ?>member/member.html">Member Documentation</a></p>
-<?php echo $footer; ?>

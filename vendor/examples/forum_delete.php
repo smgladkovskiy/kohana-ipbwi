@@ -52,7 +52,5 @@
 		<p>You have to be an admin to delete forums. if you aren't: Install IPBWI-package which includes all examples on your server.</p>
 <?
 	}
+echo $footer;
 ?>
-		<h2>Function References</h2>
-		<p><a href="<?php echo ipbwi::DOCS; ?>forum/forum.html">Forum Documentation</a></p>
-<?php echo $footer; ?>
