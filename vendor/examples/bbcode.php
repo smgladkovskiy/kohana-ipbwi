@@ -30,7 +30,4 @@
 
 		<h3>bbcode2html</h3>
 		<div class="info"><div class="i_blank"><?php echo $ipbwi->bbcode->bbcode2html($bbCode); ?></div></div>
-
-		<h3>html2bbcode</h3>
-		<pre><?php echo $ipbwi->bbcode->html2bbcode($ipbwi->bbcode->bbcode2html($bbCode)); ?></pre>
 <?php echo $footer; ?>

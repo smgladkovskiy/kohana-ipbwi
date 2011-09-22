@@ -58,7 +58,7 @@
 			}else{
 				// Init
 				$count = array('total' => '0', 'anon' => '0', 'guests' => '0', 'members' => '0');
-				$cutoff = $this->ipbwi->ips_wrapper->vars['au_cutoff'] ? $this->ipbwi->ips_wrapper->vars['au_cutoff'] : '15';
+				$cutoff = $this->ipbwi->getBoardVar('au_cutoff') ? $this->ipbwi->getBoardVar('au_cutoff') : '15';
 				$timecutoff = time() - ($cutoff * 60);
 				$this->ipbwi->ips_wrapper->DB->query('SELECT member_id, login_type FROM '.$this->ipbwi->board['sql_tbl_prefix'].'sessions WHERE running_time > "'.$timecutoff.'"');
 				// Let's cache so we don't screw ourselves over :)
@@ -104,14 +104,16 @@
 		 */
 		function birthdayMembers($day = 0, $month = 0) {
 			if((int)$day<=0){
-				$day = date('j');
+				$day = $this->ipbwi->date(false,'%e');
 			}
 			if((int)$month<=0){
-				$month = date ('n');
+				$month = $this->ipbwi->date(false,'%m');
 			}
-			$this->ipbwi->ips_wrapper->DB->query('SELECT m.*, me.signature, me.avatar_size, me.avatar_location, me.avatar_type, me.vdirs, me.location, me.msnname, me.interests, me.yahoo, me.website, me.aim_name, me.icq_number, g.*, cf.* FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members m LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.mgroup=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'pfields_content cf ON (cf.member_id=m.id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'member_extra me ON (m.id=me.id) WHERE m.bday_day="'.intval($day).'" AND m.bday_month="'.intval($month).'"');
+			
+			$query = 'SELECT m.*, g.*, cf.* FROM '.$this->ipbwi->board['sql_tbl_prefix'].'members m LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'groups g ON (m.member_group_id=g.g_id) LEFT JOIN '.$this->ipbwi->board['sql_tbl_prefix'].'pfields_content cf ON (cf.member_id=m.member_id) WHERE m.bday_day="'.intval($day).'" AND m.bday_month="'.intval($month).'"';
+			$this->ipbwi->ips_wrapper->DB->query($query);
 			$return = array();
-			$thisyear = date ('Y');
+			$thisyear = $this->ipbwi->date(false,'%j');
 			while($row = $this->ipbwi->ips_wrapper->DB->fetch()){
 				$row['age'] = $thisyear - $row['bday_year'];
 				$return[] = $row;

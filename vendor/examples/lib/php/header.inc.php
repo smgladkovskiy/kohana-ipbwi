@@ -47,8 +47,7 @@ $header = <<<EOF_HEADER
 										<ul style="margin:0px;padding:0px;">
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}member.php">Member</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}group.php">Groups</a></li>
-											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}bbcode.php">BBcode</a></li>
-											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}attachment.php">Attachment</a></li>-->
+											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}bbcode.php">BBcode</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}pm.php">PMs</a></li>
 										</ul>
 									</td>
@@ -58,12 +57,11 @@ $header = <<<EOF_HEADER
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}topic.php">Topics</a></li>
 											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}poll.php">Polls</a></li>-->
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}post.php">Posts</a></li>
-											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}tagcloud.php">Tag Cloud</a></li>-->
 										</ul>
 									</td>
 									<td style="vertical-align:top;">
 										<ul style="margin:0px;padding:0px;">
-											<!--<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}stats.php">Stats</a></li>-->
+											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}stats.php">Stats</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}skin.php">Skins</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}anti_spam.php">Anti Spam</a></li>
 											<li style="background-color:#FFF;border:1px solid #000;padding:5px;margin-bottom:2px;"><a href="{$webURL}info.php">System Info</a></li>

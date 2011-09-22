@@ -19,6 +19,10 @@ class ipbwi_ips_public_core_global_register extends public_core_global_register 
 		$this->memberData	= $this->registry->member()->fetchMemberData();
 		$this->cache		= $this->registry->cache();
 		$this->caches		= $this->registry->cache()->fetchCaches();
+		
+		$this->settings['bot_antispam_type']	= 'none';
+		$this->settings['bot_antispam']			= false;
+		$this->settings['registration_qanda']	= false;
 	}
 	
 	// set request for registration
@@ -27,7 +31,10 @@ class ipbwi_ips_public_core_global_register extends public_core_global_register 
 		$this->request['coppa_user']			= 0;
 		$this->settings['reg_auth_type'] 		= $request['reg_auth_type']; // set validation
 		$this->settings['bot_antispam_type']	= $request['bot_antispam_type'];
-		$this->settings['registration_qanda']	= 0;
+		if($request['bot_antispam_type'] == 'none'){
+			$this->settings['bot_antispam']	= false;
+		}
+		$this->settings['registration_qanda']	= false;
 		
 		@$this->registerProcessForm(); // @ todo: check notices from ip.board
 	}

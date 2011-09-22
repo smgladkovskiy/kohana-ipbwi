@@ -23,8 +23,8 @@ if(!defined('ipbwi_BOARD_PATH') || ipbwi_BOARD_PATH == ''){
 if(!defined('ipbwi_ROOT_PATH') || ipbwi_ROOT_PATH == ''){
 	die('<p>ERROR: You have to define the root path of your IPBWI installation in your IPBWI config file.</p>');
 }
-abstract class Ipbwi_Core {
-	const 				VERSION			= '3.030';
+class ipbwi {
+	const 				VERSION			= '3.050';
 	const 				TITLE			= 'IPBWI';
 	const 				PROJECT_LEADER	= 'Matthias Reuter';
 	const 				DEV_TEAM		= 'Matthias Reuter';
@@ -71,12 +71,20 @@ abstract class Ipbwi_Core {
 		}else{
 			self::setLang('en');
 		}
-
+		
 		// initialize IP.board Interface
 		require_once(ipbwi_ROOT_PATH.'lib/ips_wrapper.inc.php');
+		
 		if(!defined('IPBWI_INCORRECT_BOARD_PATH')){
 			$this->ips_wrapper = new ipbwi_ips_wrapper();
-
+			
+			if(defined('ipbwi_COOKIE_DOMAIN')){
+				$this->board['cookie_domain']						= ipbwi_COOKIE_DOMAIN;
+				$this->ips_wrapper->settings['cookie_domain']		= ipbwi_COOKIE_DOMAIN;
+				ipsRegistry::$settings['cookie_domain']				= ipbwi_COOKIE_DOMAIN;
+			}
+			ipsRegistry::cache()->updateCacheWithoutSaving( 'settings', ipsRegistry::$settings );
+			
 			// retrieve common vars
 			$this->board					= $this->ips_wrapper->settings;
 			$this->board['version']			= $this->ips_wrapper->caches['app_cache']['core']['app_version'];
@@ -89,12 +97,6 @@ abstract class Ipbwi_Core {
 			$this->board['home_name']		= $this->ips_wrapper->settings['home_name'];
 			$this->board['home_url']		= $this->ips_wrapper->settings['home_url'].'/';
 			$this->board['emo_url']			= str_replace('<#EMO_DIR#>','default',$this->ips_wrapper->settings['emoticons_url']).'/';
-
-
-			if(defined('ipbwi_COOKIE_DOMAIN')){
-				$this->board['cookie_domain']						= ipbwi_COOKIE_DOMAIN;
-				$this->ips_wrapper->settings['cookie_domain']		= ipbwi_COOKIE_DOMAIN;
-			}
 		}
 	}
 	public function __destruct() {
@@ -402,6 +404,7 @@ abstract class Ipbwi_Core {
 		}
 		// Offset with Board Time firstly, if enabled
 		// Also Check no member offset
+		
 		if(!$noBoard){
 			if(!$noMember && empty($info['time_offset'])){
 				$timeStamp = $timeStamp + ($this->ips_wrapper->settings['time_offset'] * 3600);
@@ -420,7 +423,7 @@ abstract class Ipbwi_Core {
 				$timeStamp = $timeStamp + ($info['time_offset'] * 3600);
 			}
 			if($info['dst_in_use']){
-				$timeStamp = $timeStamp - 3600;
+				$timeStamp = $timeStamp + 3600;
 			}
 		}
 		if($dateFormat){
